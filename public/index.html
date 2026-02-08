@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starbucks | Konya | Bölge Analiz & Yorum</title>
+    <meta name="description" content="Starbucks Konya Bölgesi PNL Analiz ve Yorum Platformu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="logo">
+                    <svg viewBox="0 0 62 62" class="starbucks-logo">
+                        <circle cx="31" cy="31" r="30" fill="#00704A" />
+                        <circle cx="31" cy="31" r="24" fill="none" stroke="#fff" stroke-width="1" />
+                        <text x="31" y="36" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">★</text>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Starbucks</span>
+                    <span class="brand-separator">|</span>
+                    <span class="brand-region">Konya</span>
+                    <span class="brand-separator">|</span>
+                    <span class="brand-title">Bölge Analiz & Yorum</span>
+                </div>
+            </div>
+            <button class="admin-btn" id="adminBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+                </svg>
+                Admin Panel
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Period Selector -->
+        <section class="period-section" id="periodSection">
+            <button class="period-selector-btn" id="periodSelectorBtn">
+                <span class="period-icon">📅</span>
+                <span class="period-text" id="periodText">PERİYOT SEÇ</span>
+                <svg class="period-arrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </button>
+        </section>
+
+        <!-- Period Modal -->
+        <div class="modal-overlay" id="periodModal">
+            <div class="modal-content period-modal">
+                <div class="modal-header">
+                    <h2>Periyot Seçin</h2>
+                    <button class="modal-close" id="closePeriodModal">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="period-list" id="periodList">
+                    <!-- Periods will be injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area (Hidden until period selected) -->
+        <div class="content-area hidden" id="contentArea">
+            <!-- Mode Selector -->
+            <section class="mode-section">
+                <div class="mode-tabs">
+                    <button class="mode-tab active" data-mode="stores" id="storesTab">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                        MAĞAZALAR
+                    </button>
+                    <button class="mode-tab" data-mode="items" id="itemsTab">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <line x1="10" y1="9" x2="8" y2="9" />
+                        </svg>
+                        KALEMLER
+                    </button>
+                </div>
+            </section>
+
+            <!-- PX/YTD Sub-selector -->
+            <section class="data-source-section">
+                <div class="data-source-tabs">
+                    <button class="data-tab active" data-source="px" id="pxTab">
+                        <span id="pxLabel">Periyot X</span>
+                    </button>
+                    <button class="data-tab" data-source="ytd" id="ytdTab">YTD</button>
+                </div>
+            </section>
+
+            <!-- Stores Mode Content -->
+            <section class="stores-content" id="storesContent">
+                <h3 class="section-title">Mağazalar</h3>
+                <div class="stores-grid" id="storesGrid">
+                    <!-- Store cards will be injected by JS -->
+                </div>
+
+                <!-- Selected Store Items -->
+                <div class="store-items-section hidden" id="storeItemsSection">
+                    <h3 class="section-title">
+                        <span id="selectedStoreName">Mağaza</span> - Kalem Grupları
+                    </h3>
+                    <div class="item-groups-grid" id="itemGroupsGrid">
+                        <!-- Item group cards will be injected by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Items Mode Content -->
+            <section class="items-content hidden" id="itemsContent">
+                <div class="items-tables" id="itemsTables">
+                    <!-- Item tables will be injected by JS -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Comment Modal -->
+    <div class="comment-modal-overlay" id="commentModal">
+        <div class="comment-modal">
+            <div class="comment-modal-header">
+                <div class="comment-modal-title">
+                    <h2 id="commentModalTitle">Mağaza Adı</h2>
+                    <span class="subtitle" id="commentModalSubtitle">Kalem Adı</span>
+                </div>
+                <button class="comment-modal-close" id="closeCommentModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="comment-modal-body">
+                <div class="comment-items-list" id="commentItemsList">
+                    <!-- Item list will be injected by JS -->
+                </div>
+                <div class="comment-textarea-wrapper">
+                    <h3>Yorum</h3>
+                    <!-- Saved Comment Card (hidden by default) -->
+                    <div class="saved-comment-card hidden" id="savedCommentCard">
+                        <div class="saved-comment-header">
+                            <div class="saved-comment-badge">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                Kaydedildi
+                            </div>
+                            <div class="saved-comment-actions">
+                                <button class="comment-action-btn edit" id="editCommentBtn" title="Düzenle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                </button>
+                                <button class="comment-action-btn delete" id="deleteCommentBtn" title="Sil">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6" />
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="saved-comment-text" id="savedCommentText"></div>
+                    </div>
+                    <!-- Textarea (shown by default) -->
+                    <div class="comment-textarea-container" id="commentTextareaContainer">
+                        <textarea class="comment-main-textarea" id="commentMainTextarea"
+                            placeholder="Yorumunuzu buraya yazın..." rows="2"></textarea>
+                        <!-- Character Counter (sol altta) -->
+                        <span class="comment-char-counter" id="commentCharCounter">0</span>
+
+                        <!-- Action Buttons (right side) -->
+                        <div class="comment-inline-actions" id="commentInlineActions">
+                            <!-- Check/Save Button -->
+                            <button class="comment-inline-btn save-btn" id="inlineSaveBtn" title="Kaydet"
+                                onclick="saveComment()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                            </button>
+                            <!-- Delete Button -->
+                            <button class="comment-inline-btn delete-btn hidden" id="inlineDeleteBtn" title="Sil"
+                                onclick="deleteInlineComment()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="delete-confirm-modal">
+            <div class="delete-confirm-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+            </div>
+            <h3>Yorumu Sil</h3>
+            <p>Bu yorumu silmek istediğinizden emin misiniz?</p>
+            <div class="delete-confirm-actions">
+                <button class="delete-confirm-btn cancel" id="cancelDeleteBtn">İptal</button>
+                <button class="delete-confirm-btn confirm" id="confirmDeleteBtn">Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 Starbucks Konya Bölgesi | PNL Analiz Sistemi</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

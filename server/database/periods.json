@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "Periyot 1",
+    "start": "2025-12-26",
+    "end": "2026-01-22",
+    "status": "active"
+  },
+  {
+    "id": 2,
+    "name": "Periyot 2",
+    "start": "2026-01-23",
+    "end": "2026-02-19",
+    "status": "empty"
+  },
+  {
+    "id": 3,
+    "name": "Periyot 3",
+    "start": "2026-02-20",
+    "end": "2026-03-26",
+    "status": "empty"
+  },
+  {
+    "id": 4,
+    "name": "Periyot 4",
+    "start": "2026-03-27",
+    "end": "2026-04-23",
+    "status": "empty"
+  },
+  {
+    "id": 5,
+    "name": "Periyot 5",
+    "start": "2026-04-24",
+    "end": "2026-05-21",
+    "status": "empty"
+  },
+  {
+    "id": 6,
+    "name": "Periyot 6",
+    "start": "2026-05-22",
+    "end": "2026-06-25",
+    "status": "empty"
+  },
+  {
+    "id": 7,
+    "name": "Periyot 7",
+    "start": "2026-06-26",
+    "end": "2026-07-23",
+    "status": "empty"
+  },
+  {
+    "id": 8,
+    "name": "Periyot 8",
+    "start": "2026-07-24",
+    "end": "2026-08-20",
+    "status": "empty"
+  },
+  {
+    "id": 9,
+    "name": "Periyot 9",
+    "start": "2026-08-21",
+    "end": "2026-09-24",
+    "status": "empty"
+  },
+  {
+    "id": 10,
+    "name": "Periyot 10",
+    "start": "2026-09-25",
+    "end": "2026-10-22",
+    "status": "empty"
+  },
+  {
+    "id": 11,
+    "name": "Periyot 11",
+    "start": "2026-10-23",
+    "end": "2026-11-19",
+    "status": "empty"
+  },
+  {
+    "id": 12,
+    "name": "Periyot 12",
+    "start": "2026-11-20",
+    "end": "2026-12-31",
+    "status": "empty"
+  }
+]

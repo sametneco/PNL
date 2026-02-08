@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starbucks PNL | Admin Console</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-wrapper">
+                    <svg viewBox="0 0 62 62" fill="none">
+                        <circle cx="31" cy="31" r="30" fill="#00704A" />
+                        <circle cx="31" cy="31" r="24" stroke="#fff" stroke-width="1.5" />
+                        <path d="M31 18L34 26H42L36 31L38 39L31 34L24 39L26 31L20 26H28L31 18Z" fill="white" />
+                    </svg>
+                    <div class="brand-info">
+                        <span class="brand-name">Starbucks</span>
+                        <span class="brand-sub">Admin Console</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-target="view-dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item" data-target="view-upload">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Veri Yükleme</span>
+                </a>
+                <a href="#" class="menu-item" data-target="view-settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                    <span>Görünüm Ayarları</span>
+                </a>
+
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="index.html" class="back-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h6v18h-6M10 17l-5-5 5-5M13.8 12H3" />
+                    </svg>
+                    <span>Siteye Dön</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- 1. DASHBOARD VIEW (Özet) -->
+            <section id="view-dashboard" class="view-section active">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Dashboard</h1>
+                        <p>Genel duruma hızlı bakış</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Hoş Geldiniz</h3>
+                    </div>
+                    <p style="color: var(--text-secondary);">
+                        Sol menüden yapmak istediğiniz işlemi seçebilirsiniz. Veri yüklemek için <strong>"Veri
+                            Yükleme"</strong>,
+                        görüntülenecek sütunları ayarlamak için <strong>"Görünüm Ayarları"</strong> menüsünü kullanın.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2. UPLOAD VIEW -->
+            <section id="view-upload" class="view-section">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Veri Yükleme</h1>
+                        <p>Dönemsel CSV dosyalarını yükleyin</p>
+                    </div>
+                    <button class="btn btn-danger" id="clearPeriodBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                        Verileri Temizle
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Periyot Seçimi</h3>
+                    </div>
+                    <div class="form-group" style="max-width: 400px;">
+                        <label>İşlem Yapılacak Dönem</label>
+                        <select id="periodSelect" class="admin-select"></select>
+                    </div>
+                </div>
+
+                <div class="upload-grid">
+                    <!-- PX UPLOAD -->
+                    <div class="card" style="margin:0;">
+                        <div class="card-header">
+                            <h3 class="card-title">Aylık Veri (PX)</h3>
+                            <div id="pxStatus" class="status-badge">Yüklenmedi</div>
+                        </div>
+                        <div class="upload-box" id="pxDropZone">
+                            <input type="file" id="pxFile" hidden accept=".csv">
+                            <div class="upload-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                                    <polyline points="9 15 12 12 15 15"></polyline>
+                                </svg>
+                            </div>
+                            <p style="margin:4px 0 0 0; font-size:0.8rem; color:#9CA3AF;">veya seçmek için tıklayın</p>
+                        </div>
+                        <div style="margin-top:1rem; display:flex; gap:10px;">
+                            <button class="btn btn-primary" id="uploadPxBtn" style="width:100%;" disabled>
+                                Yükle & Kaydet
+                            </button>
+                            <button class="btn btn-danger-outline" id="deletePxBtn" title="Veriyi Sil">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- YTD UPLOAD -->
+                    <div class="card" style="margin:0;">
+                        <div class="card-header">
+                            <h3 class="card-title">Kümülatif Veri (YTD)</h3>
+                            <div id="ytdStatus" class="status-badge">Yüklenmedi</div>
+                        </div>
+                        <div class="upload-box" id="ytdDropZone">
+                            <input type="file" id="ytdFile" hidden accept=".csv">
+                            <div class="upload-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <p style="margin:0; font-weight:500;">CSV dosyasını sürükleyin</p>
+                            <p style="margin:4px 0 0 0; font-size:0.8rem; color:#9CA3AF;">veya seçmek için tıklayın</p>
+                        </div>
+                        <div style="margin-top:1rem; display:flex; gap:10px;">
+                            <button class="btn btn-primary" id="uploadYtdBtn" style="width:100%;" disabled>
+                                Yükle & Kaydet
+                            </button>
+                            <button class="btn btn-danger-outline" id="deleteYtdBtn" title="Veriyi Sil">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2-2v2">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. SETTINGS VIEW - YENİ TASARIM -->
+            <section id="view-settings" class="view-section">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Görünüm Ayarları</h1>
+                        <p>Mağaza kalemlerini hızlıca yönetin (otomatik kaydedilir)</p>
+                    </div>
+                </div>
+
+                <!-- Periyot ve Veri Tipi Seçimi - Modern -->
+                <div class="card">
+                    <div class="settings-selector-modern">
+                        <!-- Periyot Seçimi -->
+                        <div class="selector-group">
+                            <label class="selector-label">Periyot</label>
+                            <select id="settingsPeriodSelect" class="admin-select-modern">
+                                <option value="">Periyot seçin...</option>
+                            </select>
+                        </div>
+
+                        <!-- Veri Tipi Toggle -->
+                        <div class="selector-group">
+                            <label class="selector-label">Veri Tipi</label>
+                            <div class="segmented-control-modern" id="typeSegmentContainer">
+                                <button class="segment-btn-modern active" data-value="px">
+                                    <span class="segment-icon">📊</span>
+                                    <span class="segment-text">PX</span>
+                                </button>
+                                <button class="segment-btn-modern" data-value="ytd">
+                                    <span class="segment-icon">📈</span>
+                                    <span class="segment-text">YTD</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mağaza Kartları Grid -->
+                <div id="storeCardsWrapper" class="hidden">
+                    <!-- Tablo Görünürlük Ayarları (Periyot bazlı) -->
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Bu Periyotta Gösterilecek Tablolar</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-secondary btn-sm" id="btnSelectAllTables">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Tümünü Seç
+                                </button>
+                                <button class="btn btn-secondary btn-sm" id="btnDeselectAllTables">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    Tümünü Kaldır
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-visibility-grid" id="tableVisibilityGrid">
+                            <!-- JS ile tablo checkboxları buraya gelecek -->
+                        </div>
+                    </div>
+
+                    <!-- Mağaza Kalem Ayarları -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Mağaza Kalem Ayarları</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn-modern btn-modern-secondary" id="btnSelectAllStores">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Tüm Mağazaları Seç
+                                </button>
+                                <button class="btn-modern btn-modern-secondary" id="btnDeselectAllStores">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    Tüm Mağazaları Kaldır
+                                </button>
+                            </div>
+                        </div>
+                        <div class="store-cards-grid-modern" id="storeCardsGrid">
+                            <!-- JS ile mağaza kartları buraya gelecek -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boş Durum Mesajı -->
+                <div id="emptyStateSettings" class="card" style="text-align: center; padding: 3rem;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 1rem; color: #9CA3AF;">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    <h3 style="color: var(--text-secondary); font-weight: 500; margin: 0;">Periyot ve veri tipi seçin</h3>
+                    <p style="color: var(--text-muted); margin: 0.5rem 0 0 0; font-size: 0.9rem;">Mağaza kartları burada görünecek</p>
+                </div>
+            </section>
+
+            <!-- 4. STORES VIEW REMOVED -->
+
+
+        </main>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

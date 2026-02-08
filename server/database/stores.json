@@ -1,0 +1,107 @@
+[
+  {
+    "code": "U684",
+    "name": "STA KON Kivilcim Bulvar",
+    "visible": true,
+    "area": "571",
+    "openingDate": "43763"
+  },
+  {
+    "code": "U272",
+    "name": "STA Kon Kent Plaza",
+    "visible": true,
+    "area": "322",
+    "openingDate": "41229"
+  },
+  {
+    "code": "U354",
+    "name": "STA Kon Kule Site",
+    "visible": true,
+    "area": "233",
+    "openingDate": "42116"
+  },
+  {
+    "code": "UA41",
+    "name": "STA KON Konya Enntepe AVM",
+    "visible": true,
+    "area": "343",
+    "openingDate": "45191"
+  },
+  {
+    "code": "U529",
+    "name": "STA Kon Meram",
+    "visible": true,
+    "area": "420",
+    "openingDate": "42805"
+  },
+  {
+    "code": "U744",
+    "name": "STA Kon M1 Konya",
+    "visible": true,
+    "area": "230",
+    "openingDate": "44018"
+  },
+  {
+    "code": "UA58",
+    "name": "STA AKS Aksaray Akso Vega",
+    "visible": true,
+    "area": "375",
+    "openingDate": "45100"
+  },
+  {
+    "code": "UA25",
+    "name": "STA Kon Temasehir",
+    "visible": true,
+    "area": "335",
+    "openingDate": "45090"
+  },
+  {
+    "code": "U824",
+    "name": "STA Park Karaman",
+    "visible": true,
+    "area": "302",
+    "openingDate": "44729"
+  },
+  {
+    "code": "U619",
+    "name": "STA Selcuker Center",
+    "visible": true,
+    "area": "305",
+    "openingDate": "43231"
+  },
+  {
+    "code": "U862",
+    "name": "STA AKS Nora City",
+    "visible": true,
+    "area": "345",
+    "openingDate": "44729"
+  },
+  {
+    "code": "U990",
+    "name": "STA ANK Tuzgolu Ankara Yonu",
+    "visible": true,
+    "area": "233",
+    "openingDate": "44880"
+  },
+  {
+    "code": "U947",
+    "name": "STA KON Meram Cadde",
+    "visible": true,
+    "area": "389",
+    "openingDate": "44855"
+  },
+  {
+    "code": "U627",
+    "name": "STA KON Novada Konya",
+    "visible": true,
+    "area": "250",
+    "openingDate": "43234"
+  },
+  {
+    "code": "U991",
+    "name": "STA ANK Tuzgolu Nigde Yonu",
+    "visible": true,
+    "area": "230",
+    "openingDate": "44880"
+  }
+]

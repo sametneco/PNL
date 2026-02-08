@@ -1,0 +1,118 @@
+{
+  "1": {
+    "px": {
+      "Net Sales": false,
+      "COGS": false,
+      "Royalty": false,
+      "Store Margin": false,
+      "Cost of Sales": false,
+      "Operating Margin": false,
+      "Staff Cost": false,
+      "Controllables": false,
+      "Rent": false,
+      "Depreciation": false,
+      "Store Contribution": false,
+      "Cash +/- Stores": false
+    },
+    "ytd": {
+      "Store Margin": false,
+      "Rent": false,
+      "Net Sales": false,
+      "COGS": false,
+      "Royalty": false,
+      "Cost of Sales": false,
+      "Operating Margin": false,
+      "Staff Cost": false,
+      "Controllables": false,
+      "Depreciation": false,
+      "Store Contribution": false,
+      "Cash +/- Stores": false
+    }
+  },
+  "2": {
+    "px": {
+      "Net Sales": false,
+      "COGS": false,
+      "Royalty": false,
+      "Store Margin": false,
+      "Cost of Sales": false,
+      "Operating Margin": false,
+      "Staff Cost": false,
+      "Controllables": true,
+      "Rent": false,
+      "Depreciation": false,
+      "Store Contribution": false,
+      "Cash +/- Stores": false
+    },
+    "ytd": {
+      "Net Sales": false,
+      "COGS": false,
+      "Royalty": false,
+      "Store Margin": false,
+      "Cost of Sales": false,
+      "Operating Margin": false,
+      "Staff Cost": false,
+      "Controllables": false,
+      "Rent": false,
+      "Depreciation": false,
+      "Store Contribution": false,
+      "Cash +/- Stores": false
+    }
+  },
+  "3": {
+    "px": {
+      "Net Sales": false,
+      "COGS": false,
+      "Royalty": false,
+      "Store Margin": false,
+      "Cost of Sales": false,
+      "Operating Margin": false,
+      "Staff Cost": false,
+      "Controllables": false,
+      "Rent": false,
+      "Depreciation": false,
+      "Store Contribution": false,
+      "Cash +/- Stores": false
+    },
+    "ytd": {
+      "Net Sales": false,
+      "COGS": false,
+      "Royalty": false,
+      "Store Margin": false,
+      "Cost of Sales": false,
+      "Operating Margin": false,
+      "Staff Cost": false,
+      "Controllables": false,
+      "Rent": false,
+      "Depreciation": false,
+      "Store Contribution": false,
+      "Cash +/- Stores": false
+    }
+  },
+  "10": {
+    "ytd": {
+      "Net Sales": false,
+      "COGS": false,
+      "Royalty": false,
+      "Store Margin": false,
+      "Cost of Sales": false,
+      "Operating Margin": false,
+      "Staff Cost": false,
+      "Controllables": false,
+      "Rent": false,
+      "Depreciation": false,
+      "Store Contribution": false,
+      "Cash +/- Stores": false
+    }
+  },
+  "Store Margin": false,
+  "Staff Cost": false,
+  "Depreciation": false,
+  "Cost of Sales": false,
+  "Controllables": false,
+  "Store Contribution": false,
+  "Cash +/- Stores": false,
+  "Rent": false,
+  "Operating Margin": false,
+  "Royalty": false
+}
