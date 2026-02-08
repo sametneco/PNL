@@ -9,11 +9,17 @@ const PeriodModel = require('../md/PeriodModel');
 const StoreModel = require('../md/StoreModel');
 const DataModel = require('../md/DataModel');
 const StoreSettingsModel = require('../md/StoreSettingsModel');
+const CommentModel = require('../md/CommentModel');
 const UploadRules = require('../rules/UploadRules');
 const CsvSkill = require('../skills/CsvSkill');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Keep-alive for Render free tier
+if (process.env.RENDER_EXTERNAL_URL) {
+    require('../keep-alive');
+}
 
 // Middleware
 app.use(cors());
@@ -255,6 +261,69 @@ app.post('/api/table-visibility', (req, res) => {
     } catch (err) {
         console.error('Table visibility save error:', err);
         res.status(500).json({ error: 'Ayarlar kaydedilemedi.' });
+    }
+});
+
+// ===== COMMENT API ENDPOINTS =====
+
+// Get all comments
+app.get('/api/comments', (req, res) => {
+    try {
+        const comments = CommentModel.getAll();
+        res.json(comments);
+    } catch (err) {
+        console.error('Comments fetch error:', err);
+        res.status(500).json({ error: 'Yorumlar yüklenemedi.' });
+    }
+});
+
+// Get comment by key
+app.get('/api/comments/:key', (req, res) => {
+    try {
+        const comment = CommentModel.get(req.params.key);
+        res.json({ comment });
+    } catch (err) {
+        console.error('Comment fetch error:', err);
+        res.status(500).json({ error: 'Yorum yüklenemedi.' });
+    }
+});
+
+// Save comment
+app.post('/api/comments', (req, res) => {
+    try {
+        const { key, text } = req.body;
+        
+        if (!key || !text) {
+            return res.status(400).json({ error: 'Key ve text gerekli.' });
+        }
+        
+        CommentModel.save(key, text);
+        res.json({ success: true, message: 'Yorum kaydedildi.' });
+    } catch (err) {
+        console.error('Comment save error:', err);
+        res.status(500).json({ error: 'Yorum kaydedilemedi.' });
+    }
+});
+
+// Delete comment
+app.delete('/api/comments/:key', (req, res) => {
+    try {
+        CommentModel.delete(req.params.key);
+        res.json({ success: true, message: 'Yorum silindi.' });
+    } catch (err) {
+        console.error('Comment delete error:', err);
+        res.status(500).json({ error: 'Yorum silinemedi.' });
+    }
+});
+
+// Get comments by store
+app.get('/api/comments/store/:storeCode', (req, res) => {
+    try {
+        const comments = CommentModel.getByStore(req.params.storeCode);
+        res.json(comments);
+    } catch (err) {
+        console.error('Store comments fetch error:', err);
+        res.status(500).json({ error: 'Mağaza yorumları yüklenemedi.' });
     }
 });
 

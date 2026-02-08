@@ -1114,43 +1114,56 @@ function getCurrentCommentText() {
 }
 
 // Save comment
-function saveComment() {
+async function saveComment() {
     const commentText = getCurrentCommentText();
 
     if (currentCommentKey && commentText) {
-        // Save to state and localStorage
-        state.comments[currentCommentKey] = String(commentText);
-        localStorage.setItem('pnl_comments', JSON.stringify(state.comments));
+        // Save to backend
+        try {
+            const res = await fetch(`${API_URL}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: currentCommentKey, text: commentText })
+            });
 
-        // Animate save icon
-        const saveBtn = document.getElementById('inlineSaveBtn');
-        const deleteBtn = document.getElementById('inlineDeleteBtn');
-        const container = document.getElementById('commentTextareaContainer');
+            if (!res.ok) throw new Error('Save failed');
 
-        if (saveBtn) {
-            saveBtn.classList.add('saving');
-            setTimeout(() => saveBtn.classList.remove('saving'), 600);
-        }
+            // Update local state
+            state.comments[currentCommentKey] = String(commentText);
 
-        // Show delete button
-        if (deleteBtn) {
-            deleteBtn.classList.remove('hidden');
-        }
+            // Animate save icon
+            const saveBtn = document.getElementById('inlineSaveBtn');
+            const deleteBtn = document.getElementById('inlineDeleteBtn');
+            const container = document.getElementById('commentTextareaContainer');
 
-        // İkonları gizle ve çerçeveyi pasifleştir
-        setTimeout(() => {
-            if (container) {
-                container.classList.remove('has-content');
-                container.classList.add('inactive');
+            if (saveBtn) {
+                saveBtn.classList.add('saving');
+                setTimeout(() => saveBtn.classList.remove('saving'), 600);
             }
-        }, 700);
 
-        // Re-render to update comment indicators
-        setTimeout(() => {
-            if (state.currentMode === 'items') {
-                renderItemsTables();
+            // Show delete button
+            if (deleteBtn) {
+                deleteBtn.classList.remove('hidden');
             }
-        }, 400);
+
+            // İkonları gizle ve çerçeveyi pasifleştir
+            setTimeout(() => {
+                if (container) {
+                    container.classList.remove('has-content');
+                    container.classList.add('inactive');
+                }
+            }, 700);
+
+            // Re-render to update comment indicators
+            setTimeout(() => {
+                if (state.currentMode === 'items') {
+                    renderItemsTables();
+                }
+            }, 400);
+        } catch (err) {
+            console.error('Comment save error:', err);
+            alert('Yorum kaydedilemedi. Lütfen tekrar deneyin.');
+        }
     }
 }
 
@@ -1197,34 +1210,46 @@ function deleteInlineComment() {
 }
 
 // Confirm delete action
-function confirmDelete() {
+async function confirmDelete() {
     if (!currentCommentKey) return;
 
-    // Delete from state and localStorage
-    delete state.comments[currentCommentKey];
-    localStorage.setItem('pnl_comments', JSON.stringify(state.comments));
+    try {
+        // Delete from backend
+        const res = await fetch(`${API_URL}/comments/${currentCommentKey}`, {
+            method: 'DELETE'
+        });
 
-    // Clear textarea and hide delete button
-    const textarea = document.getElementById('commentMainTextarea');
-    const charCounter = document.getElementById('commentCharCounter');
-    const deleteBtn = document.getElementById('inlineDeleteBtn');
+        if (!res.ok) throw new Error('Delete failed');
 
-    if (textarea) {
-        textarea.value = '';
-        textarea.disabled = false;
-        updateCharCounter(textarea, charCounter);
-    }
+        // Delete from local state
+        delete state.comments[currentCommentKey];
 
-    if (deleteBtn) {
-        deleteBtn.classList.add('hidden');
-    }
+        // Clear textarea and hide delete button
+        const textarea = document.getElementById('commentMainTextarea');
+        const charCounter = document.getElementById('commentCharCounter');
+        const deleteBtn = document.getElementById('inlineDeleteBtn');
 
-    // Close delete modal
-    closeDeleteModal();
+        if (textarea) {
+            textarea.value = '';
+            textarea.disabled = false;
+            updateCharCounter(textarea, charCounter);
+        }
 
-    // Re-render to update comment indicators
-    if (state.currentMode === 'items') {
-        renderItemsTables();
+        if (deleteBtn) {
+            deleteBtn.classList.add('hidden');
+        }
+
+        // Close delete modal
+        closeDeleteModal();
+
+        // Re-render to update comment indicators
+        if (state.currentMode === 'items') {
+            renderItemsTables();
+        }
+    } catch (err) {
+        console.error('Comment delete error:', err);
+        alert('Yorum silinemedi. Lütfen tekrar deneyin.');
+        closeDeleteModal();
     }
 }
 
@@ -1268,20 +1293,20 @@ function closeCommentModal() {
     showTextareaMode();
 }
 
-// Load comments from localStorage
-function loadComments() {
+// Load comments from backend
+async function loadComments() {
     try {
-        const saved = localStorage.getItem('pnl_comments');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            // Ensure all values are strings
+        const res = await fetch(`${API_URL}/comments`);
+        if (res.ok) {
+            const comments = await res.json();
+            state.comments = comments || {};
+            console.log('✅ Comments loaded:', Object.keys(state.comments).length);
+        } else {
+            console.warn('⚠️ Comments load failed, using empty state');
             state.comments = {};
-            for (const key in parsed) {
-                state.comments[key] = typeof parsed[key] === 'string' ? parsed[key] : '';
-            }
         }
     } catch (error) {
-        console.error('Error loading comments:', error);
+        console.error('❌ Error loading comments:', error);
         state.comments = {};
     }
 }
