@@ -1,16 +1,20 @@
 {
   "name": "pnl",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Starbucks Konya Bölgesi PNL Analiz Sistemi",
+  "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "dev": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "keywords": ["starbucks", "pnl", "analysis", "express", "nodejs"],
+  "author": "Starbucks Konya",
+  "license": "UNLICENSED",
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",

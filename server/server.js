@@ -13,7 +13,7 @@ const UploadRules = require('../rules/UploadRules');
 const CsvSkill = require('../skills/CsvSkill');
 
 const app = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(cors());
