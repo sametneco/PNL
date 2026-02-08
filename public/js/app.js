@@ -41,7 +41,8 @@ const PERIODS = [
     { id: 12, name: 'Periyot 12', start: '11/20/2026', end: '12/31/2026', weeks: 6, quarter: 'Q4' },
 ];
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = window.location.origin + '/api';
+console.log('🔗 API URL:', API_URL);
 let STORES = [];
 let PERIOD_DATA = {}; // Will hold the period data
 let TABLE_VISIBILITY = {}; // Will hold table visibility settings

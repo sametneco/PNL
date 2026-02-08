@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDropZones();
 });
 
-const API_URL = 'http://localhost:8080/api';
+const API_URL = window.location.origin + '/api';
+console.log('🔗 API URL:', API_URL);
 
 // --- Tab/Navigation Logic ---
 function initTabs() {
