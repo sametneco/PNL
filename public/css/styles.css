@@ -1347,6 +1347,14 @@ body::before {
     white-space: nowrap;
 }
 
+.comment-item-value.positive {
+    color: #22c55e;
+}
+
+.comment-item-value.negative {
+    color: #ef4444;
+}
+
 .comment-item.highlighted .comment-item-value {
     color: #f59e0b;
 }

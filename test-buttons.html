@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Test</title>
+    <link rel="stylesheet" href="public/css/styles.css">
+    <style>
+        body {
+            padding: 50px;
+            background: #f5f7fa;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Button Visibility Test</h1>
+        
+        <div class="comment-textarea-container" style="position: relative; min-height: 150px;">
+            <textarea class="comment-main-textarea" placeholder="Test yazın..."></textarea>
+            <span class="comment-char-counter">0</span>
+            
+            <div class="comment-inline-actions" style="position: absolute; bottom: 10px; right: 10px;">
+                <button class="comment-inline-btn save-btn" title="Kaydet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                </button>
+                <button class="comment-inline-btn delete-btn" title="Sil">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f0f0f0; border-radius: 8px;">
+            <h3>Beklenen Görünüm:</h3>
+            <ul>
+                <li>Yeşil kaydet butonu (tik işareti)</li>
+                <li>Beyaz sil butonu (çöp kutusu)</li>
+                <li>Her ikisi de 36x36px</li>
+                <li>Sağ altta yan yana</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

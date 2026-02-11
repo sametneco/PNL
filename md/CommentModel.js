@@ -29,7 +29,7 @@ class CommentModel {
      */
     static save(key, text) {
         const comments = this.getAll();
-        comments[key] = String(text);
+        comments[key] = text; // Obje veya string olarak kaydet
         FileSkill.writeJSON(COMMENTS_FILE, comments);
     }
 
@@ -51,13 +51,13 @@ class CommentModel {
     static getByStore(storeCode) {
         const comments = this.getAll();
         const storeComments = {};
-        
+
         for (const key in comments) {
             if (key.startsWith(storeCode + '_')) {
                 storeComments[key] = comments[key];
             }
         }
-        
+
         return storeComments;
     }
 

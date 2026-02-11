@@ -1,5 +1,24 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('Admin Page Loaded');
+
+    // Auth Check - Token yoksa login'e yönlendir
+    const token = localStorage.getItem('pnl_auth_token');
+    if (!token) {
+        window.location.href = '/login.html?return=admin.html';
+        return;
+    }
+    try {
+        const authRes = await fetch(`${window.location.origin}/api/auth/verify`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!authRes.ok) {
+            localStorage.removeItem('pnl_auth_token');
+            window.location.href = '/login.html?return=admin.html';
+            return;
+        }
+    } catch (err) {
+        console.error('Auth check failed:', err);
+    }
 
     // UI Init
     initTabs();
@@ -10,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupDropZones();
 });
 
-const API_URL = window.location.origin + '/api';
+const API_URL = '/api';
 console.log('🔗 API URL:', API_URL);
 
 // --- Tab/Navigation Logic ---
@@ -342,7 +361,7 @@ async function loadPeriodDataForSettings(periodId, type) {
     if (PERIOD_DATA_CACHE[cacheKey]) {
         return PERIOD_DATA_CACHE[cacheKey];
     }
-    
+
     try {
         const res = await fetch(`${API_URL}/data/${periodId}`);
         const data = await res.json();
@@ -359,24 +378,24 @@ function getItemDataForSettings(storeCode, groupName, itemName, type) {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const cacheKey = `${periodId}_${type}`;
     const sourceData = PERIOD_DATA_CACHE[cacheKey] || [];
-    
+
     if (sourceData.length === 0) {
         return { value: '-' };
     }
-    
+
     // Find row for this store
     const row = sourceData.find(r => r['EPM Store Name'] && r['EPM Store Name'].includes(`-${storeCode}-`));
-    
+
     if (!row) {
         return { value: '-' };
     }
-    
+
     // Helper to parse float from comma string
     const parseTR = (val) => {
         if (!val) return 0;
         return parseFloat(val.replace(',', '.'));
     };
-    
+
     // Helper to format number
     const formatNumber = (num) => {
         if (!num || num === 0) return '0';
@@ -385,10 +404,10 @@ function getItemDataForSettings(storeCode, groupName, itemName, type) {
             maximumFractionDigits: 0
         }).format(num);
     };
-    
+
     // Map item name to CSV column
     let columnKey;
-    
+
     // Direct mapping based on item name
     if (itemName.includes('Actual Net Sales')) columnKey = 'Actual Net Sales';
     else if (itemName.includes('BP-2025 Net Sales')) columnKey = 'BP-2025 Net Sales';
@@ -435,13 +454,13 @@ function getItemDataForSettings(storeCode, groupName, itemName, type) {
     else if (itemName.includes('Actual vs BP Difference Store Contribution') && !itemName.includes('%')) columnKey = 'Actual vs BP Difference store conribution';
     else if (itemName.includes('Actual vs BP Difference (%) Store Contribution')) columnKey = 'Actual vs BP Difference (%) contribution';
     else if (itemName.includes('Cash +/- Stores')) columnKey = 'Cash +/-  Stores';
-    
+
     if (!columnKey || !row[columnKey]) {
         return { value: '-' };
     }
-    
+
     const rawValue = row[columnKey];
-    
+
     // Check if it's a percentage
     if (itemName.includes('%')) {
         const pVal = parseFloat(rawValue.toString().replace(',', '.'));
@@ -451,7 +470,7 @@ function getItemDataForSettings(storeCode, groupName, itemName, type) {
             return { value: `%${pVal.toFixed(1)}` };
         }
     }
-    
+
     // Regular number
     const numValue = parseTR(rawValue);
     return { value: formatNumber(numValue) };
@@ -460,30 +479,30 @@ function getStoreGroupDataForSettings(storeCode, groupName, type) {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const cacheKey = `${periodId}_${type}`;
     const sourceData = PERIOD_DATA_CACHE[cacheKey] || [];
-    
+
     if (sourceData.length === 0) {
         return {
             actualFormatted: '-',
             diffPercent: 0
         };
     }
-    
+
     // Find row for this store
     const row = sourceData.find(r => r['EPM Store Name'] && r['EPM Store Name'].includes(`-${storeCode}-`));
-    
+
     if (!row) {
         return {
             actualFormatted: '-',
             diffPercent: 0
         };
     }
-    
+
     // Helper to parse float from comma string
     const parseTR = (val) => {
         if (!val) return 0;
         return parseFloat(val.replace(',', '.'));
     };
-    
+
     // Helper to format number
     const formatNumber = (num) => {
         if (!num || num === 0) return '0';
@@ -492,10 +511,10 @@ function getStoreGroupDataForSettings(storeCode, groupName, type) {
             maximumFractionDigits: 0
         }).format(num);
     };
-    
+
     // Map keys based on group name (simplified version)
     let actualKey, diffPercentKey;
-    
+
     switch (groupName) {
         case 'Net Sales':
             actualKey = 'Actual Net Sales';
@@ -542,11 +561,11 @@ function getStoreGroupDataForSettings(storeCode, groupName, type) {
             actualKey = 'Cash +/-  Stores';
             break;
     }
-    
+
     const actual = parseTR(row[actualKey]);
-    const diffPercent = diffPercentKey && row[diffPercentKey] ? 
+    const diffPercent = diffPercentKey && row[diffPercentKey] ?
         (parseFloat(row[diffPercentKey].replace(',', '.')) * 100).toFixed(1) : 0;
-    
+
     return {
         actualFormatted: formatNumber(actual),
         diffPercent: parseFloat(diffPercent)
@@ -570,10 +589,10 @@ async function loadStoresForSettings() {
 
         // Load all settings
         await loadAllSettings();
-        
+
         // Load table visibility settings
         await loadTableVisibility();
-        
+
         // Setup event listeners AFTER elements are loaded
         setupSettingsEventListeners();
 
@@ -591,14 +610,14 @@ function setupSettingsEventListeners() {
         periodSelect.addEventListener('change', async () => {
             const periodId = periodSelect.value;
             console.log('Period changed to:', periodId);
-            
+
             // Update ONLY the active segment button with period number
             if (periodId) {
                 const activeBtn = document.querySelector('#typeSegmentContainer .segment-btn-modern.active');
                 if (activeBtn) {
                     const type = activeBtn.dataset.value.toUpperCase();
                     activeBtn.querySelector('.segment-text').textContent = `P${periodId} - ${type}`;
-                    
+
                     // Preload data for active type
                     await loadPeriodDataForSettings(periodId, activeBtn.dataset.value);
                 }
@@ -609,19 +628,19 @@ function setupSettingsEventListeners() {
                     btn.querySelector('.segment-text').textContent = type;
                 });
             }
-            
+
             renderTableVisibilityGrid();
             await renderStoreCards();
         });
     }
-    
+
     // Type toggle handler
     document.querySelectorAll('#typeSegmentContainer .segment-btn-modern').forEach(btn => {
         if (!btn.dataset.listenerAttached) {
             btn.dataset.listenerAttached = 'true';
             btn.addEventListener('click', async () => {
                 console.log('Type button clicked:', btn.dataset.value);
-                
+
                 document.querySelectorAll('#typeSegmentContainer .segment-btn-modern').forEach(b => {
                     b.classList.remove('active');
                     // Reset non-active buttons to just type name
@@ -629,22 +648,22 @@ function setupSettingsEventListeners() {
                     b.querySelector('.segment-text').textContent = type;
                 });
                 btn.classList.add('active');
-                
+
                 // Update ONLY the active segment button text with period number
                 const periodId = document.getElementById('settingsPeriodSelect')?.value;
                 if (periodId) {
                     const type = btn.dataset.value.toUpperCase();
                     btn.querySelector('.segment-text').textContent = `P${periodId} - ${type}`;
                 }
-                
+
                 // Wait for data to load before rendering
                 const selectedType = btn.dataset.value;
                 console.log('Switching to type:', selectedType);
-                
+
                 if (periodId) {
                     await loadPeriodDataForSettings(periodId, selectedType);
                 }
-                
+
                 renderTableVisibilityGrid();
                 await renderStoreCards();
             });
@@ -670,20 +689,20 @@ function renderTableVisibilityGrid() {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
     const grid = document.getElementById('tableVisibilityGrid');
-    
+
     if (!grid || !periodId) return;
-    
+
     // Get visibility for this period + type
     const periodSettings = TABLE_VISIBILITY[periodId] || {};
     const typeSettings = periodSettings[type] || {};
-    
+
     // Check if this is first time (no settings exist)
     const isFirstTime = Object.keys(typeSettings).length === 0;
-    
+
     grid.innerHTML = ITEM_GROUPS.map(group => {
         // Default FALSE (unselected) for first time, otherwise use saved value
         const isVisible = isFirstTime ? false : (typeSettings[group.name] === true);
-        
+
         return `
             <div class="table-visibility-item ${isVisible ? 'checked' : ''}" onclick="toggleTableVisibility('${group.name}')">
                 <input type="checkbox" 
@@ -696,23 +715,23 @@ function renderTableVisibilityGrid() {
     }).join('');
 }
 
-window.toggleTableVisibility = async function(tableName) {
+window.toggleTableVisibility = async function (tableName) {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     // Initialize structure if needed
     if (!TABLE_VISIBILITY[periodId]) TABLE_VISIBILITY[periodId] = {};
     if (!TABLE_VISIBILITY[periodId][type]) TABLE_VISIBILITY[periodId][type] = {};
-    
+
     // Toggle the value
     const current = TABLE_VISIBILITY[periodId][type][tableName];
     TABLE_VISIBILITY[periodId][type][tableName] = current === false ? true : false;
-    
+
     // Update UI
     renderTableVisibilityGrid();
-    
+
     // Save to backend
     try {
         await fetch(`${API_URL}/table-visibility`, {
@@ -733,7 +752,7 @@ async function loadAllSettings() {
             return { code: store.code, settings: await res.json() };
         });
         const results = await Promise.all(promises);
-        
+
         CURRENT_SETTINGS = {};
         results.forEach(item => {
             CURRENT_SETTINGS[item.code] = item.settings;
@@ -746,20 +765,20 @@ async function loadAllSettings() {
 async function renderStoreCards() {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     const wrapper = document.getElementById('storeCardsWrapper');
     const grid = document.getElementById('storeCardsGrid');
-    
+
     if (!periodId || !ALL_STORES.length) {
         wrapper?.classList.add('hidden');
         return;
     }
-    
+
     wrapper?.classList.remove('hidden');
-    
+
     // Render table visibility grid
     renderTableVisibilityGrid();
-    
+
     // Save current expanded states before re-rendering
     const expandedStates = {};
     document.querySelectorAll('.store-card-modern').forEach(storeCard => {
@@ -773,40 +792,40 @@ async function renderStoreCards() {
             expandedStates[storeCode].groups[groupName] = groupCard.classList.contains('expanded');
         });
     });
-    
+
     // Load period data for this period - AWAIT here
     await loadPeriodDataForSettings(periodId, type);
     console.log('Data loaded for:', periodId, type, 'Cache:', PERIOD_DATA_CACHE[`${periodId}_${type}`]?.length || 0, 'rows');
-    
+
     // Render store cards - GROUPED BY ITEM GROUPS
     grid.innerHTML = ALL_STORES.map(store => {
-            const storeSettings = CURRENT_SETTINGS[store.code] || {};
-            const periodSettings = storeSettings[periodId] || {};
-            const typeSettings = periodSettings[type] || {};
-            const hiddenGroups = typeSettings.hiddenGroups || [];
-            const highlights = typeSettings.highlights || [];
-            
-            const isFirstTime = Object.keys(periodSettings).length === 0 || !typeSettings.hiddenGroups;
-            
-            // Count selected groups
-            const selectedCount = ITEM_GROUPS.filter(group => {
-                if (isFirstTime) return false;
-                return !hiddenGroups.includes(group.name);
-            }).length;
-            
-            // Render groups with their items
-            const groupCards = ITEM_GROUPS.map(group => {
-                const groupChecked = isFirstTime ? false : !hiddenGroups.includes(group.name);
-                
-                // Render all items for this group
-                const items = group.items.map(item => {
-                    const itemKey = `${group.name}-${item}`;
-                    const itemHighlighted = highlights.includes(itemKey);
-                    
-                    // Get data for this specific item
-                    const itemData = getItemDataForSettings(store.code, group.name, item, type);
-                    
-                    return `
+        const storeSettings = CURRENT_SETTINGS[store.code] || {};
+        const periodSettings = storeSettings[periodId] || {};
+        const typeSettings = periodSettings[type] || {};
+        const hiddenGroups = typeSettings.hiddenGroups || [];
+        const highlights = typeSettings.highlights || [];
+
+        const isFirstTime = Object.keys(periodSettings).length === 0 || !typeSettings.hiddenGroups;
+
+        // Count selected groups
+        const selectedCount = ITEM_GROUPS.filter(group => {
+            if (isFirstTime) return false;
+            return !hiddenGroups.includes(group.name);
+        }).length;
+
+        // Render groups with their items
+        const groupCards = ITEM_GROUPS.map(group => {
+            const groupChecked = isFirstTime ? false : !hiddenGroups.includes(group.name);
+
+            // Render all items for this group
+            const items = group.items.map(item => {
+                const itemKey = `${group.name}-${item}`;
+                const itemHighlighted = highlights.includes(itemKey);
+
+                // Get data for this specific item
+                const itemData = getItemDataForSettings(store.code, group.name, item, type);
+
+                return `
                         <div class="group-item ${itemHighlighted ? 'highlighted' : ''}" 
                              onclick="event.stopPropagation(); toggleItemHighlight('${store.code}', '${group.name}', '${item}')">
                             <div class="group-item-name">${item.replace(group.name, '').trim() || item}</div>
@@ -814,9 +833,9 @@ async function renderStoreCards() {
                             ${itemHighlighted ? '<span class="star-icon">⭐</span>' : ''}
                         </div>
                     `;
-                }).join('');
-                
-                return `
+            }).join('');
+
+            return `
                     <div class="group-card ${groupChecked ? 'selected' : ''}" data-group="${group.name}" data-store="${store.code}">
                         <div class="group-card-header" onclick="event.stopPropagation(); toggleGroupSelection('${store.code}', '${group.name}')">
                             <div class="group-card-check">
@@ -834,9 +853,9 @@ async function renderStoreCards() {
                         </div>
                     </div>
                 `;
-            }).join('');
-            
-            return `
+        }).join('');
+
+        return `
                 <div class="store-card-modern" id="store_${store.code}">
                     <div class="store-card-modern-header" onclick="toggleStoreCard('${store.code}')">
                         <div class="store-card-modern-title-wrapper">
@@ -874,14 +893,14 @@ async function renderStoreCards() {
                 </div>
             `;
     }).join('');
-    
+
     // Restore expanded states after rendering
     Object.keys(expandedStates).forEach(storeCode => {
         const storeCard = document.getElementById(`store_${storeCode}`);
         if (storeCard && expandedStates[storeCode].storeExpanded) {
             storeCard.classList.add('expanded');
         }
-        
+
         Object.keys(expandedStates[storeCode].groups).forEach(groupName => {
             const groupCard = storeCard?.querySelector(`.group-card[data-group="${groupName}"]`);
             if (groupCard && expandedStates[storeCode].groups[groupName]) {
@@ -893,32 +912,32 @@ async function renderStoreCards() {
     });
 }
 
-window.toggleStoreCard = function(storeCode) {
+window.toggleStoreCard = function (storeCode) {
     const card = document.getElementById(`store_${storeCode}`);
     if (card) {
         card.classList.toggle('expanded');
     }
 };
 
-window.toggleGroupCard = function(storeCode, groupName) {
+window.toggleGroupCard = function (storeCode, groupName) {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     const storeSettings = CURRENT_SETTINGS[storeCode] || {};
     const periodSettings = storeSettings[periodId] || {};
     const typeSettings = periodSettings[type] || {};
     let hiddenGroups = typeSettings.hiddenGroups || [];
     const highlights = typeSettings.highlights || [];
-    
+
     const index = hiddenGroups.indexOf(groupName);
     if (index > -1) {
         hiddenGroups = hiddenGroups.filter(g => g !== groupName);
     } else {
         hiddenGroups.push(groupName);
     }
-    
+
     fetch(`${API_URL}/settings/${storeCode}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -933,25 +952,25 @@ window.toggleGroupCard = function(storeCode, groupName) {
 };
 
 // Separate function for toggling group selection (checkbox)
-window.toggleGroupSelection = async function(storeCode, groupName) {
+window.toggleGroupSelection = async function (storeCode, groupName) {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     const storeSettings = CURRENT_SETTINGS[storeCode] || {};
     const periodSettings = storeSettings[periodId] || {};
     const typeSettings = periodSettings[type] || {};
     let hiddenGroups = typeSettings.hiddenGroups || [];
     const highlights = typeSettings.highlights || [];
-    
+
     const index = hiddenGroups.indexOf(groupName);
     if (index > -1) {
         hiddenGroups = hiddenGroups.filter(g => g !== groupName);
     } else {
         hiddenGroups.push(groupName);
     }
-    
+
     await fetch(`${API_URL}/settings/${storeCode}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -961,49 +980,49 @@ window.toggleGroupSelection = async function(storeCode, groupName) {
             data: { hiddenGroups, highlights }
         })
     });
-    
+
     // Update local cache without full reload
     if (!CURRENT_SETTINGS[storeCode]) CURRENT_SETTINGS[storeCode] = {};
     if (!CURRENT_SETTINGS[storeCode][periodId]) CURRENT_SETTINGS[storeCode][periodId] = {};
     if (!CURRENT_SETTINGS[storeCode][periodId][type]) CURRENT_SETTINGS[storeCode][periodId][type] = {};
     CURRENT_SETTINGS[storeCode][periodId][type].hiddenGroups = hiddenGroups;
     CURRENT_SETTINGS[storeCode][periodId][type].highlights = highlights;
-    
+
     await renderStoreCards();
 };
 
 // New function for toggling group expand/collapse
-window.toggleGroupExpand = function(storeCode, groupName) {
+window.toggleGroupExpand = function (storeCode, groupName) {
     const storeCard = document.getElementById(`store_${storeCode}`);
     if (!storeCard) return;
-    
+
     const groupCard = storeCard.querySelector(`.group-card[data-group="${groupName}"]`);
     if (!groupCard) return;
-    
+
     groupCard.classList.toggle('expanded');
 };
 
-window.toggleItemHighlight = async function(storeCode, groupName, itemName) {
+window.toggleItemHighlight = async function (storeCode, groupName, itemName) {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     const storeSettings = CURRENT_SETTINGS[storeCode] || {};
     const periodSettings = storeSettings[periodId] || {};
     const typeSettings = periodSettings[type] || {};
     const hiddenGroups = typeSettings.hiddenGroups || [];
     let highlights = typeSettings.highlights || [];
-    
+
     const itemKey = `${groupName}-${itemName}`;
     const index = highlights.indexOf(itemKey);
-    
+
     if (index > -1) {
         highlights = highlights.filter(h => h !== itemKey);
     } else {
         highlights.push(itemKey);
     }
-    
+
     await fetch(`${API_URL}/settings/${storeCode}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1013,35 +1032,35 @@ window.toggleItemHighlight = async function(storeCode, groupName, itemName) {
             data: { hiddenGroups, highlights }
         })
     });
-    
+
     // Update local cache without full reload
     if (!CURRENT_SETTINGS[storeCode]) CURRENT_SETTINGS[storeCode] = {};
     if (!CURRENT_SETTINGS[storeCode][periodId]) CURRENT_SETTINGS[storeCode][periodId] = {};
     if (!CURRENT_SETTINGS[storeCode][periodId][type]) CURRENT_SETTINGS[storeCode][periodId][type] = {};
     CURRENT_SETTINGS[storeCode][periodId][type].hiddenGroups = hiddenGroups;
     CURRENT_SETTINGS[storeCode][periodId][type].highlights = highlights;
-    
+
     await renderStoreCards();
 };
 
-window.selectAllGroups = async function(storeCode, selectAll) {
+window.selectAllGroups = async function (storeCode, selectAll) {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     const storeSettings = CURRENT_SETTINGS[storeCode] || {};
     const periodSettings = storeSettings[periodId] || {};
     const typeSettings = periodSettings[type] || {};
     const highlights = typeSettings.highlights || [];
-    
+
     let hiddenGroups = [];
     if (!selectAll) {
         // Deselect all - add all groups to hidden
         hiddenGroups = ITEM_GROUPS.map(g => g.name);
     }
     // If selectAll, hiddenGroups stays empty
-    
+
     await fetch(`${API_URL}/settings/${storeCode}/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1051,14 +1070,14 @@ window.selectAllGroups = async function(storeCode, selectAll) {
             data: { hiddenGroups, highlights }
         })
     });
-    
+
     // Update local cache without full reload
     if (!CURRENT_SETTINGS[storeCode]) CURRENT_SETTINGS[storeCode] = {};
     if (!CURRENT_SETTINGS[storeCode][periodId]) CURRENT_SETTINGS[storeCode][periodId] = {};
     if (!CURRENT_SETTINGS[storeCode][periodId][type]) CURRENT_SETTINGS[storeCode][periodId][type] = {};
     CURRENT_SETTINGS[storeCode][periodId][type].hiddenGroups = hiddenGroups;
     CURRENT_SETTINGS[storeCode][periodId][type].highlights = highlights;
-    
+
     await renderStoreCards();
 };
 
@@ -1066,18 +1085,18 @@ window.selectAllGroups = async function(storeCode, selectAll) {
 document.getElementById('btnSelectAllTables')?.addEventListener('click', () => {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     if (!TABLE_VISIBILITY[periodId]) TABLE_VISIBILITY[periodId] = {};
     if (!TABLE_VISIBILITY[periodId][type]) TABLE_VISIBILITY[periodId][type] = {};
-    
+
     ITEM_GROUPS.forEach(group => {
         TABLE_VISIBILITY[periodId][type][group.name] = true;
     });
-    
+
     renderTableVisibilityGrid();
-    
+
     fetch(`${API_URL}/table-visibility`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1088,18 +1107,18 @@ document.getElementById('btnSelectAllTables')?.addEventListener('click', () => {
 document.getElementById('btnDeselectAllTables')?.addEventListener('click', () => {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     if (!TABLE_VISIBILITY[periodId]) TABLE_VISIBILITY[periodId] = {};
     if (!TABLE_VISIBILITY[periodId][type]) TABLE_VISIBILITY[periodId][type] = {};
-    
+
     ITEM_GROUPS.forEach(group => {
         TABLE_VISIBILITY[periodId][type][group.name] = false;
     });
-    
+
     renderTableVisibilityGrid();
-    
+
     fetch(`${API_URL}/table-visibility`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1115,16 +1134,16 @@ document.getElementById('btnDeselectAllTables')?.addEventListener('click', () =>
 document.getElementById('btnSelectAllStores')?.addEventListener('click', async () => {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     // Select all groups for ALL stores
     const promises = ALL_STORES.map(store => {
         const storeSettings = CURRENT_SETTINGS[store.code] || {};
         const periodSettings = storeSettings[periodId] || {};
         const typeSettings = periodSettings[type] || {};
         const highlights = typeSettings.highlights || [];
-        
+
         return fetch(`${API_URL}/settings/${store.code}/update`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1135,7 +1154,7 @@ document.getElementById('btnSelectAllStores')?.addEventListener('click', async (
             })
         });
     });
-    
+
     await Promise.all(promises);
     await loadAllSettings();
     renderStoreCards();
@@ -1144,18 +1163,18 @@ document.getElementById('btnSelectAllStores')?.addEventListener('click', async (
 document.getElementById('btnDeselectAllStores')?.addEventListener('click', async () => {
     const periodId = document.getElementById('settingsPeriodSelect')?.value;
     const type = document.querySelector('#typeSegmentContainer .segment-btn-modern.active')?.dataset.value || 'px';
-    
+
     if (!periodId) return;
-    
+
     // Deselect all groups for ALL stores
     const allHidden = ITEM_GROUPS.map(g => g.name);
-    
+
     const promises = ALL_STORES.map(store => {
         const storeSettings = CURRENT_SETTINGS[store.code] || {};
         const periodSettings = storeSettings[periodId] || {};
         const typeSettings = periodSettings[type] || {};
         const highlights = typeSettings.highlights || [];
-        
+
         return fetch(`${API_URL}/settings/${store.code}/update`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1166,7 +1185,7 @@ document.getElementById('btnDeselectAllStores')?.addEventListener('click', async
             })
         });
     });
-    
+
     await Promise.all(promises);
     await loadAllSettings();
     renderStoreCards();

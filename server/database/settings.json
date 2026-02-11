@@ -6,20 +6,7 @@
         "highlights": []
       },
       "ytd": {
-        "hiddenGroups": [
-          "Net Sales",
-          "COGS",
-          "Royalty",
-          "Store Margin",
-          "Cost of Sales",
-          "Operating Margin",
-          "Staff Cost",
-          "Controllables",
-          "Rent",
-          "Depreciation",
-          "Store Contribution",
-          "Cash +/- Stores"
-        ],
+        "hiddenGroups": [],
         "highlights": []
       }
     },
@@ -217,7 +204,20 @@
   "U272": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -434,7 +434,20 @@
   "U684": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": [
           "COGS-Actual COGS",
           "Controllables-Actual vs BP Difference Controllables",
@@ -665,7 +678,20 @@
   "U354": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -866,7 +892,20 @@
   "UA58": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -1064,7 +1103,20 @@
   "UA41": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -1262,7 +1314,20 @@
   "U529": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -1460,7 +1525,20 @@
   "UA25": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -1658,7 +1736,20 @@
   "U824": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -1856,7 +1947,20 @@
   "U619": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -2054,7 +2158,20 @@
   "U862": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -2252,7 +2369,20 @@
   "U990": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -2450,7 +2580,20 @@
   "U947": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -2648,7 +2791,20 @@
   "U627": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {
@@ -2846,7 +3002,20 @@
   "U991": {
     "1": {
       "px": {
-        "hiddenGroups": [],
+        "hiddenGroups": [
+          "Net Sales",
+          "COGS",
+          "Royalty",
+          "Store Margin",
+          "Cost of Sales",
+          "Operating Margin",
+          "Staff Cost",
+          "Controllables",
+          "Rent",
+          "Depreciation",
+          "Store Contribution",
+          "Cash +/- Stores"
+        ],
         "highlights": []
       },
       "ytd": {

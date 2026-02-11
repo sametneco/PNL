@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starbucks | Konya | Dönemsel Analiz</title>
+    <meta name="description" content="Starbucks Konya Bölgesi PNL Analiz Platformu">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/analysis.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="logo">
+                    <svg viewBox="0 0 62 62" class="starbucks-logo">
+                        <circle cx="31" cy="31" r="30" fill="#00704A" />
+                        <circle cx="31" cy="31" r="24" fill="none" stroke="#fff" stroke-width="1" />
+                        <text x="31" y="36" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">★</text>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Starbucks</span>
+                    <span class="brand-separator">|</span>
+                    <span class="brand-region">Konya</span>
+                    <span class="brand-separator">|</span>
+                    <span class="brand-title">Dönemsel Analiz</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem;">
+                <button class="admin-btn" onclick="window.location.href='index.html'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Ana Sayfa
+                </button>
+                <button class="admin-btn" onclick="window.location.href='admin.html'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Yönetici
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <!-- Controls Section -->
+        <section class="analysis-controls">
+            <div class="period-selectors">
+                <div class="selector-group">
+                    <label>Periyot A (Baz)</label>
+                    <select id="periodASelect" class="modern-select">
+                        <option value="">Seçiniz...</option>
+                    </select>
+                </div>
+
+                <div class="vs-badge">VS</div>
+
+                <div class="selector-group">
+                    <label>Periyot B (Karşılaştırma)</label>
+                    <select id="periodBSelect" class="modern-select">
+                        <option value="">Seçiniz...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="type-toggles">
+                <button class="type-btn active" data-type="px">PX (Aylık)</button>
+                <button class="type-btn" data-type="ytd">YTD (Kümülatif)</button>
+            </div>
+
+            <button id="runAnalysisBtn" class="primary-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Analizi Çalıştır
+            </button>
+        </section>
+
+        <!-- Analysis Content (Hidden initially) -->
+        <div id="analysisContent" class="hidden">
+
+            <!-- KPI Cards -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <h3>Net Satış Değişimi</h3>
+                    <div class="kpi-value" id="kpiSalesDiff">-</div>
+                    <div class="kpi-sub" id="kpiSalesPercent">-</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Mağaza Kar Marjı</h3>
+                    <div class="kpi-value" id="kpiMarginDiff">-</div>
+                    <div class="kpi-sub" id="kpiMarginPercent">-</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>İşletme Karı</h3>
+                    <div class="kpi-value" id="kpiOpDiff">-</div>
+                    <div class="kpi-sub" id="kpiOpPercent">-</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Toplam Gider</h3>
+                    <div class="kpi-value" id="kpiCostDiff">-</div>
+                    <div class="kpi-sub" id="kpiCostPercent">-</div>
+                </div>
+            </section>
+
+
+
+            <!-- Detailed Metrics -->
+            <section class="comparison-section">
+                <div class="section-header">
+                    <h2>Genel Karşılaştırma</h2>
+                    <div class="store-filter-wrapper">
+                        <select id="storeFilterSelect" class="modern-select"
+                            style="font-size: 0.9rem; padding: 6px 12px; min-width: 220px;">
+                            <option value="">Tüm Mağazalar</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="analysis-table">
+                        <thead>
+                            <tr>
+                                <th colspan="5" class="table-sub-header"
+                                    style="background: #f9f9f9; color: #666; font-size: 0.85em; text-align: center; padding: 8px;">
+                                    VERİ TİPİ: <span id="activeDataTypeDisplay">AYLIK (PX)</span>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>Kalem Grubu</th>
+                                <th class="text-right" id="headerPeriodA">Periyot A</th>
+                                <th class="text-right" id="headerPeriodB">Periyot B</th>
+                                <th class="text-right">Fark</th>
+                                <th class="text-right">Değişim %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metricsBody">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state-large">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="9" x2="15" y2="9"></line>
+                <line x1="9" y1="13" x2="15" y2="13"></line>
+            </svg>
+            <h3>Analiz İçin Periyot Seçin</h3>
+            <p>Karşılaştırmak istediğiniz iki periyodu yukarıdan seçerek analizi başlatın.</p>
+        </div>
+
+    </main>
+
+    <script src="js/analysis.js?v=2.8"></script>
+</body>
+
+</html>

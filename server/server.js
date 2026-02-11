@@ -16,6 +16,11 @@ const CsvSkill = require('../skills/CsvSkill');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const crypto = require('crypto');
+
+// Auth Configuration
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'starbucks2026';
+const AUTH_TOKENS = new Set(); // Active tokens in memory
 
 // Keep-alive for Render free tier
 if (process.env.RENDER_EXTERNAL_URL) {
@@ -56,6 +61,37 @@ PeriodModel.getAll();
 StoreModel.getAll();
 DataModel.getAll();
 
+
+// --- Auth Endpoints ---
+
+// Login
+app.post('/api/auth/login', (req, res) => {
+    const { password } = req.body;
+
+    if (!password) {
+        return res.status(400).json({ error: 'Şifre gerekli.' });
+    }
+
+    if (password === ADMIN_PASSWORD) {
+        const token = crypto.randomBytes(32).toString('hex');
+        AUTH_TOKENS.add(token);
+        res.json({ token, message: 'Giriş başarılı.' });
+    } else {
+        res.status(401).json({ error: 'Hatalı şifre.' });
+    }
+});
+
+// Verify token
+app.get('/api/auth/verify', (req, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.replace('Bearer ', '');
+
+    if (token && AUTH_TOKENS.has(token)) {
+        res.json({ valid: true });
+    } else {
+        res.status(401).json({ valid: false, error: 'Geçersiz token.' });
+    }
+});
 
 // --- API Endpoints ---
 
@@ -169,7 +205,7 @@ app.post('/api/clear/:periodId', (req, res) => {
 // API: Save Settings (Granular Update) - MUST BE FIRST (most specific)
 app.post('/api/settings/:storeCode/update', (req, res) => {
     console.log('✅ UPDATE endpoint hit:', req.params.storeCode, req.body);
-    
+
     const { storeCode } = req.params;
     const { periodId, type, data } = req.body; // data: { hiddenGroups, highlights }
 
@@ -202,7 +238,7 @@ app.get('/api/settings/:storeCode', (req, res) => {
 // API: Save Store Settings (Legacy/Full) - MUST BE LAST (least specific)
 app.post('/api/settings/:storeCode', (req, res) => {
     console.log('⚠️ LEGACY settings endpoint hit:', req.params.storeCode);
-    
+
     const FileSkill = require('../skills/FileSkill');
     const settingsPath = path.join(__dirname, 'database/settings.json');
     const settings = FileSkill.readJSON(settingsPath, {});
@@ -222,19 +258,6 @@ app.post('/api/stores/:storeCode/visibility', (req, res) => {
 
     if (success) {
         res.json({ message: 'Görünürlük güncellendi.', visible });
-    } else {
-        res.status(404).json({ error: 'Mağaza bulunamadı.' });
-    }
-});
-
-// Mağaza görünürlük ayarı
-app.post('/api/stores/:code/visibility', (req, res) => {
-    const { code } = req.params;
-    const { visible } = req.body;
-
-    const success = StoreModel.setVisibility(code, visible);
-    if (success) {
-        res.json({ message: 'Mağaza görünürlüğü güncellendi.' });
     } else {
         res.status(404).json({ error: 'Mağaza bulunamadı.' });
     }
@@ -261,13 +284,43 @@ app.get('/api/table-visibility', (req, res) => {
 app.post('/api/table-visibility', (req, res) => {
     const FileSkill = require('../skills/FileSkill');
     const visibilityPath = path.join(__dirname, 'database/table-visibility.json');
-    
+
     try {
         FileSkill.writeJSON(visibilityPath, req.body);
         res.json({ success: true, message: 'Tablo görünürlük ayarları kaydedildi.' });
     } catch (err) {
         console.error('Table visibility save error:', err);
         res.status(500).json({ error: 'Ayarlar kaydedilemedi.' });
+    }
+});
+
+// API: Get System Status (Last Updated)
+app.get('/api/status', (req, res) => {
+    try {
+        const dbDir = path.join(__dirname, 'database');
+        const uploadsDir = path.join(__dirname, 'uploads');
+
+        let lastUpdated = null;
+
+        const checkDir = (dir) => {
+            if (fs.existsSync(dir)) {
+                const files = fs.readdirSync(dir);
+                files.forEach(file => {
+                    const stats = fs.statSync(path.join(dir, file));
+                    if (!lastUpdated || stats.mtime > lastUpdated) {
+                        lastUpdated = stats.mtime;
+                    }
+                });
+            }
+        };
+
+        checkDir(dbDir);
+        checkDir(uploadsDir);
+
+        res.json({ lastUpdated: lastUpdated || new Date() });
+    } catch (err) {
+        console.error('Status check error:', err);
+        res.status(500).json({ error: 'Durum kontrolü hatası.' });
     }
 });
 
@@ -298,13 +351,16 @@ app.get('/api/comments/:key', (req, res) => {
 // Save comment
 app.post('/api/comments', (req, res) => {
     try {
-        const { key, text } = req.body;
-        
+        const { key, text, author, timestamp } = req.body;
+
         if (!key || !text) {
             return res.status(400).json({ error: 'Key ve text gerekli.' });
         }
-        
-        CommentModel.save(key, text);
+
+        // Eğer author varsa obje olarak kaydet, yoksa string (eski usul)
+        const valueToSave = author ? { text, author, timestamp } : text;
+
+        CommentModel.save(key, valueToSave);
         res.json({ success: true, message: 'Yorum kaydedildi.' });
     } catch (err) {
         console.error('Comment save error:', err);

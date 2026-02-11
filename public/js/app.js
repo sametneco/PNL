@@ -41,7 +41,7 @@ const PERIODS = [
     { id: 12, name: 'Periyot 12', start: '11/20/2026', end: '12/31/2026', weeks: 6, quarter: 'Q4' },
 ];
 
-const API_URL = `${window.location.origin}/api`;
+const API_URL = '/api';
 let STORES = [];
 let PERIOD_DATA = {}; // Will hold the period data
 let TABLE_VISIBILITY = {}; // Will hold table visibility settings
@@ -956,8 +956,9 @@ async function openCommentModal(storeCode, tableName) {
         const itemKey = `${tableName}-${item}`;
         const isHighlighted = highlights.includes(itemKey);
 
-        // Her item için doğru değeri bul
+        // Her item için doğru değeri ve renk sınıfını bul
         let displayValue = '-';
+        let valueColorClass = '';
 
         // Item ismini kontrol et ve ona göre değer ata
         const itemLower = item.toLowerCase();
@@ -965,7 +966,6 @@ async function openCommentModal(storeCode, tableName) {
         if (itemLower.includes('actual') && !itemLower.includes('bp') && !itemLower.includes('difference')) {
             // Actual değeri
             if (itemLower.includes('%')) {
-                // % değeri - actualPercent varsa göster
                 displayValue = (storeData.actualPercent && storeData.actualPercent !== '0.0')
                     ? `${storeData.actualPercent}%`
                     : '-';
@@ -976,11 +976,14 @@ async function openCommentModal(storeCode, tableName) {
             // BP değeri
             displayValue = formatNumber(storeData.bp);
         } else if (itemLower.includes('difference') && itemLower.includes('%')) {
-            // Fark yüzdesi
+            // Fark yüzdesi - renklendirme uygula
             displayValue = `${storeData.diffPercent}%`;
+            const numVal = parseFloat(storeData.diffPercent);
+            if (!isNaN(numVal)) valueColorClass = numVal >= 0 ? 'positive' : 'negative';
         } else if (itemLower.includes('difference') || itemLower.includes('fark')) {
-            // Fark değeri
+            // Fark değeri - renklendirme uygula
             displayValue = formatNumber(storeData.diff);
+            valueColorClass = storeData.diff >= 0 ? 'positive' : 'negative';
         } else if (item === group.name) {
             // Grup adının kendisi - Actual değeri göster
             displayValue = formatNumber(storeData.actual);
@@ -995,7 +998,7 @@ async function openCommentModal(storeCode, tableName) {
             <div class="comment-item ${isHighlighted ? 'highlighted' : ''}">
                 <span class="comment-item-bullet"></span>
                 <span class="comment-item-label">${item}</span>
-                <span class="comment-item-value">${displayValue}</span>
+                <span class="comment-item-value ${valueColorClass}">${displayValue}</span>
             </div>
         `;
     }).join('');
@@ -1008,7 +1011,9 @@ async function openCommentModal(storeCode, tableName) {
     `;
 
     // Load existing comment
-    const existingComment = state.comments[currentCommentKey] || '';
+    const commentData = state.comments[currentCommentKey];
+    const existingComment = getCommentText(commentData);
+
     const textarea = document.getElementById('commentMainTextarea');
     const charCounter = document.getElementById('commentCharCounter');
     const deleteBtn = document.getElementById('inlineDeleteBtn');
@@ -1021,11 +1026,11 @@ async function openCommentModal(storeCode, tableName) {
         textarea.disabled = false;
         updateCharCounter(textarea, charCounter);
         autoResizeTextarea(textarea);
-        
+
         // Add keydown listener for Enter behavior
         textarea.removeEventListener('keydown', handleTextareaKeydown);
         textarea.addEventListener('keydown', handleTextareaKeydown);
-        
+
         // Add focus listener to reactivate after save
         textarea.removeEventListener('focus', handleTextareaFocus);
         textarea.addEventListener('focus', handleTextareaFocus);
@@ -1036,6 +1041,11 @@ async function openCommentModal(storeCode, tableName) {
         if (existingComment) {
             deleteBtn.classList.remove('hidden');
             deleteBtn.style.display = 'inline-flex';
+
+            // Eğer yorum kaydedilmişse ve modal açıldıysa, salt okunur modda göster
+            if (commentData) {
+                showSavedCommentCard(commentData);
+            }
         } else {
             deleteBtn.classList.add('hidden');
             deleteBtn.style.display = 'none';
@@ -1064,11 +1074,35 @@ function autoResizeTextarea(textarea) {
     textarea.style.height = Math.min(textarea.scrollHeight, 400) + 'px';
 }
 
+// Helper to get text from comment (string or object)
+function getCommentText(comment) {
+    if (!comment) return '';
+    if (typeof comment === 'object') return comment.text || '';
+    return comment;
+}
+
 // Show saved comment card
-function showSavedCommentCard(commentText) {
+function showSavedCommentCard(commentData) {
     elements.savedCommentCard.classList.remove('hidden');
     elements.commentTextareaContainer.classList.add('hidden');
-    elements.savedCommentText.textContent = commentText;
+
+    const text = getCommentText(commentData);
+    const author = (typeof commentData === 'object' && commentData.author) ? commentData.author : '';
+    const dateStr = (typeof commentData === 'object' && commentData.timestamp) ?
+        new Date(commentData.timestamp).toLocaleString('tr-TR') : '';
+
+    let html = `<div class="comment-text">${text}</div>`;
+
+    if (author) {
+        html += `
+            <div class="comment-meta" style="margin-top: 0.5rem; font-size: 0.75rem; color: #666; display: flex; justify-content: space-between;">
+                <span class="comment-author"><strong>${author}</strong></span>
+                <span class="comment-date">${dateStr}</span>
+            </div>
+        `;
+    }
+
+    elements.savedCommentText.innerHTML = html;
 }
 
 // Show textarea mode
@@ -1090,7 +1124,7 @@ function updateCharCounter(textarea, counter) {
     // Show/hide save icon based on content
     const container = document.getElementById('commentTextareaContainer');
     if (!container) return;
-    
+
     if (textarea.value.trim().length > 0) {
         container.classList.add('has-content');
         container.classList.remove('inactive');
@@ -1118,23 +1152,41 @@ function getCurrentCommentText() {
 
 // Save comment
 async function saveComment() {
-    const commentText = getCurrentCommentText();
-
-    if (!currentCommentKey) {
-        alert('Hata: Yorum anahtarı bulunamadı. Lütfen sayfayı yenileyin.');
-        return;
-    }
-
-    if (!commentText) {
-        return;
-    }
-
-    // Save to backend
     try {
+        const commentText = getCurrentCommentText();
+
+        if (!currentCommentKey) {
+            alert('Hata: Yorum anahtarı bulunamadı. Lütfen sayfayı yenileyin.');
+            return;
+        }
+
+        if (!commentText) {
+            return;
+        }
+
+        // Local Storage'dan kullanıcı adını al
+        let username = localStorage.getItem('pnl_comment_author');
+        if (!username) {
+            username = prompt('Yorum eklemek için isminizi giriniz:');
+            if (username) {
+                localStorage.setItem('pnl_comment_author', username);
+            } else {
+                return; // İsim girilmezse kaydetme
+            }
+        }
+
+        const commentObj = {
+            key: currentCommentKey,
+            text: commentText,
+            author: username,
+            timestamp: new Date().toISOString()
+        };
+
+        // Save to backend
         const res = await fetch(`${API_URL}/comments`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: currentCommentKey, text: commentText })
+            body: JSON.stringify(commentObj)
         });
 
         if (!res.ok) {
@@ -1144,24 +1196,27 @@ async function saveComment() {
 
         const result = await res.json();
 
-        // Update local state
-        state.comments[currentCommentKey] = String(commentText);
+        // Update local state - store full object
+        state.comments[currentCommentKey] = commentObj;
 
-            // Animate save icon
-            const saveBtn = document.getElementById('inlineSaveBtn');
-            const deleteBtn = document.getElementById('inlineDeleteBtn');
-            const container = document.getElementById('commentTextareaContainer');
+        // Show saved card immediately
+        showSavedCommentCard(commentObj);
 
-            if (saveBtn) {
-                saveBtn.classList.add('saving');
-                setTimeout(() => saveBtn.classList.remove('saving'), 600);
-            }
+        // Animate save icon
+        const saveBtn = document.getElementById('inlineSaveBtn');
+        const deleteBtn = document.getElementById('inlineDeleteBtn');
+        const container = document.getElementById('commentTextareaContainer');
 
-            // Show delete button
-            if (deleteBtn) {
-                deleteBtn.classList.remove('hidden');
-                deleteBtn.style.display = 'inline-flex';
-            }
+        if (saveBtn) {
+            saveBtn.classList.add('saving');
+            setTimeout(() => saveBtn.classList.remove('saving'), 600);
+        }
+
+        // Show delete button
+        if (deleteBtn) {
+            deleteBtn.classList.remove('hidden');
+            deleteBtn.style.display = 'inline-flex';
+        }
 
         // İkonları gizle ve çerçeveyi pasifleştir
         setTimeout(() => {
@@ -1185,7 +1240,8 @@ async function saveComment() {
 
 // Edit comment
 function editComment() {
-    const commentText = state.comments[currentCommentKey] || '';
+    const commentData = state.comments[currentCommentKey];
+    const commentText = getCommentText(commentData);
     const textarea = document.getElementById('commentMainTextarea');
     const charCounter = document.getElementById('commentCharCounter');
     const container = document.getElementById('commentTextareaContainer');
@@ -1198,7 +1254,7 @@ function editComment() {
         // Add input listener for char counter
         textarea.removeEventListener('input', handleTextareaInput);
         textarea.addEventListener('input', handleTextareaInput);
-        
+
         // Add focus listener
         textarea.removeEventListener('focus', handleTextareaFocus);
         textarea.addEventListener('focus', handleTextareaFocus);
@@ -1291,7 +1347,7 @@ function handleTextareaInput() {
 function handleTextareaFocus() {
     const container = document.getElementById('commentTextareaContainer');
     const textarea = document.getElementById('commentMainTextarea');
-    
+
     if (container && textarea) {
         // Eğer içerik varsa, inactive'i kaldır ve has-content ekle
         if (textarea.value.trim().length > 0) {
@@ -1386,7 +1442,26 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStores(); // Load stores from API
     loadComments();
     renderPeriodList();
+    loadSystemStatus();
 });
+
+async function loadSystemStatus() {
+    try {
+        const res = await fetch(`${API_URL}/status`);
+        if (res.ok) {
+            const data = await res.json();
+            const date = new Date(data.lastUpdated);
+            const formatted = date.toLocaleString('tr-TR', {
+                day: 'numeric', month: 'long', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+            const el = document.getElementById('lastUpdatedInfo');
+            if (el) el.textContent = `Son Güncelleme: ${formatted}`;
+        }
+    } catch (err) {
+        console.error('Status load error:', err);
+    }
+}
 
 async function loadStores() {
     try {
