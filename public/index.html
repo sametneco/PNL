@@ -195,19 +195,23 @@
                         <span class="comment-char-counter" id="commentCharCounter">0</span>
 
                         <!-- Action Buttons (right side) -->
-                        <div class="comment-inline-actions" id="commentInlineActions">
+                        <div class="comment-inline-actions" id="commentInlineActions" style="display: flex !important; position: absolute; bottom: 0.625rem; right: 0.875rem; gap: 0.5rem; z-index: 100;">
                             <!-- Check/Save Button -->
                             <button class="comment-inline-btn save-btn" id="inlineSaveBtn" title="Kaydet"
-                                onclick="saveComment()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                onclick="saveComment()" style="display: inline-flex !important; width: 36px; height: 36px; background: #00a86b; border: 2px solid #00a86b; border-radius: 8px; align-items: center; justify-content: center; cursor: pointer;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="width: 18px; height: 18px; display: block;">
                                     <polyline points="20 6 9 17 4 12" />
                                 </svg>
                             </button>
                             <!-- Delete Button -->
                             <button class="comment-inline-btn delete-btn hidden" id="inlineDeleteBtn" title="Sil"
-                                onclick="deleteInlineComment()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                onclick="deleteInlineComment()" style="display: inline-flex; width: 36px; height: 36px; background: #ffffff; border: 2px solid #ffcccc; border-radius: 8px; align-items: center; justify-content: center; cursor: pointer;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="width: 18px; height: 18px; display: block;">
                                     <polyline points="3 6 5 6 21 6" />
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                            </button>
+                        </div>
                                     <path
                                         d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                                 </svg>

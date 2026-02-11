@@ -41,8 +41,7 @@ const PERIODS = [
     { id: 12, name: 'Periyot 12', start: '11/20/2026', end: '12/31/2026', weeks: 6, quarter: 'Q4' },
 ];
 
-const API_URL = window.location.origin + '/api';
-console.log('🔗 API URL:', API_URL);
+const API_URL = `${window.location.origin}/api`;
 let STORES = [];
 let PERIOD_DATA = {}; // Will hold the period data
 let TABLE_VISIBILITY = {}; // Will hold table visibility settings
@@ -777,21 +776,21 @@ function renderItemsTables() {
             // Tablo satırları - sıra numarası ekle
             const tableRows = hasBp ? filteredData.map((row, idx) => `
             <tr class="clickable-row" data-store-code="${row.code}" data-table-name="${group.name}">
-                <td class="number-cell">${idx + 1}</td>
-                <td class="store-cell">${row.name}</td>
-                <td class="number-cell">${formatNumber(row.actual)}</td>
-                <td class="number-cell">${formatNumber(row.bp)}</td>
-                <td class="number-cell ${row.diff >= 0 ? 'positive' : 'negative'}">${formatNumber(row.diff)}</td>
-                <td class="number-cell ${row.diffPercent >= 0 ? 'positive' : 'negative'}">${row.diffPercent}%</td>
+                <td class="number-cell" data-label="#">${idx + 1}</td>
+                <td class="store-cell" data-label="Mağaza">${row.name}</td>
+                <td class="number-cell" data-label="Actual">${formatNumber(row.actual)}</td>
+                <td class="number-cell" data-label="BP-2025">${formatNumber(row.bp)}</td>
+                <td class="number-cell ${row.diff >= 0 ? 'positive' : 'negative'}" data-label="Fark">${formatNumber(row.diff)}</td>
+                <td class="number-cell ${row.diffPercent >= 0 ? 'positive' : 'negative'}" data-label="% Fark">${row.diffPercent}%</td>
             </tr>
         `).join('') : filteredData.map((row, idx) => {
                 const percent = (15 + Math.random() * 10).toFixed(1);
                 return `
                 <tr class="clickable-row" data-store-code="${row.code}" data-table-name="${group.name}">
-                    <td class="number-cell">${idx + 1}</td>
-                    <td class="store-cell">${row.name}</td>
-                    <td class="number-cell">${formatNumber(row.actual)}</td>
-                    <td class="number-cell">${percent}%</td>
+                    <td class="number-cell" data-label="#">${idx + 1}</td>
+                    <td class="store-cell" data-label="Mağaza">${row.name}</td>
+                    <td class="number-cell" data-label="Actual">${formatNumber(row.actual)}</td>
+                    <td class="number-cell" data-label="%">${percent}%</td>
                 </tr>
             `;
             }).join('');
@@ -1036,8 +1035,10 @@ async function openCommentModal(storeCode, tableName) {
     if (deleteBtn) {
         if (existingComment) {
             deleteBtn.classList.remove('hidden');
+            deleteBtn.style.display = 'inline-flex';
         } else {
             deleteBtn.classList.add('hidden');
+            deleteBtn.style.display = 'none';
         }
     }
 
@@ -1088,6 +1089,8 @@ function updateCharCounter(textarea, counter) {
 
     // Show/hide save icon based on content
     const container = document.getElementById('commentTextareaContainer');
+    if (!container) return;
+    
     if (textarea.value.trim().length > 0) {
         container.classList.add('has-content');
         container.classList.remove('inactive');
@@ -1116,44 +1119,30 @@ function getCurrentCommentText() {
 // Save comment
 async function saveComment() {
     const commentText = getCurrentCommentText();
-    
-    console.log('💾 Save comment called:', {
-        currentCommentKey,
-        commentText,
-        hasKey: !!currentCommentKey,
-        hasText: !!commentText
-    });
 
     if (!currentCommentKey) {
-        console.error('❌ No comment key!');
         alert('Hata: Yorum anahtarı bulunamadı. Lütfen sayfayı yenileyin.');
         return;
     }
 
     if (!commentText) {
-        console.warn('⚠️ No comment text');
         return;
     }
 
     // Save to backend
     try {
-        console.log('📡 Sending to API:', `${API_URL}/comments`);
         const res = await fetch(`${API_URL}/comments`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key: currentCommentKey, text: commentText })
         });
 
-        console.log('📥 Response status:', res.status);
-
         if (!res.ok) {
             const errorText = await res.text();
-            console.error('❌ API Error:', errorText);
             throw new Error('Save failed: ' + errorText);
         }
 
         const result = await res.json();
-        console.log('✅ Save successful:', result);
 
         // Update local state
         state.comments[currentCommentKey] = String(commentText);
@@ -1171,6 +1160,7 @@ async function saveComment() {
             // Show delete button
             if (deleteBtn) {
                 deleteBtn.classList.remove('hidden');
+                deleteBtn.style.display = 'inline-flex';
             }
 
         // İkonları gizle ve çerçeveyi pasifleştir
@@ -1263,6 +1253,7 @@ async function confirmDelete() {
 
         if (deleteBtn) {
             deleteBtn.classList.add('hidden');
+            deleteBtn.style.display = 'none';
         }
 
         // Close delete modal
@@ -1326,13 +1317,10 @@ async function loadComments() {
         if (res.ok) {
             const comments = await res.json();
             state.comments = comments || {};
-            console.log('✅ Comments loaded:', Object.keys(state.comments).length);
         } else {
-            console.warn('⚠️ Comments load failed, using empty state');
             state.comments = {};
         }
     } catch (error) {
-        console.error('❌ Error loading comments:', error);
         state.comments = {};
     }
 }
