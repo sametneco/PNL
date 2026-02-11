@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yükleniyor... | Starbucks PNL</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #00704A 0%, #004e34 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: white;
+        }
+        .loader {
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        p {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        .tip {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+        <h1>Starbucks PNL Analiz</h1>
+        <p>Sunucu başlatılıyor...</p>
+        <p class="tip">İlk yükleme 30-60 saniye sürebilir. Sonraki yüklemeler çok daha hızlı olacak.</p>
+    </div>
+    <script>
+        // 3 saniye sonra ana sayfaya yönlendir
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 3000);
+        
+        // Her 2 saniyede bir kontrol et
+        const checkServer = setInterval(async () => {
+            try {
+                const res = await fetch('/api/periods');
+                if (res.ok) {
+                    clearInterval(checkServer);
+                    window.location.href = '/';
+                }
+            } catch (e) {
+                // Sunucu henüz hazır değil
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

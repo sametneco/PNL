@@ -1116,20 +1116,47 @@ function getCurrentCommentText() {
 // Save comment
 async function saveComment() {
     const commentText = getCurrentCommentText();
+    
+    console.log('💾 Save comment called:', {
+        currentCommentKey,
+        commentText,
+        hasKey: !!currentCommentKey,
+        hasText: !!commentText
+    });
 
-    if (currentCommentKey && commentText) {
-        // Save to backend
-        try {
-            const res = await fetch(`${API_URL}/comments`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key: currentCommentKey, text: commentText })
-            });
+    if (!currentCommentKey) {
+        console.error('❌ No comment key!');
+        alert('Hata: Yorum anahtarı bulunamadı. Lütfen sayfayı yenileyin.');
+        return;
+    }
 
-            if (!res.ok) throw new Error('Save failed');
+    if (!commentText) {
+        console.warn('⚠️ No comment text');
+        return;
+    }
 
-            // Update local state
-            state.comments[currentCommentKey] = String(commentText);
+    // Save to backend
+    try {
+        console.log('📡 Sending to API:', `${API_URL}/comments`);
+        const res = await fetch(`${API_URL}/comments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: currentCommentKey, text: commentText })
+        });
+
+        console.log('📥 Response status:', res.status);
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('❌ API Error:', errorText);
+            throw new Error('Save failed: ' + errorText);
+        }
+
+        const result = await res.json();
+        console.log('✅ Save successful:', result);
+
+        // Update local state
+        state.comments[currentCommentKey] = String(commentText);
 
             // Animate save icon
             const saveBtn = document.getElementById('inlineSaveBtn');
@@ -1146,24 +1173,23 @@ async function saveComment() {
                 deleteBtn.classList.remove('hidden');
             }
 
-            // İkonları gizle ve çerçeveyi pasifleştir
-            setTimeout(() => {
-                if (container) {
-                    container.classList.remove('has-content');
-                    container.classList.add('inactive');
-                }
-            }, 700);
+        // İkonları gizle ve çerçeveyi pasifleştir
+        setTimeout(() => {
+            if (container) {
+                container.classList.remove('has-content');
+                container.classList.add('inactive');
+            }
+        }, 700);
 
-            // Re-render to update comment indicators
-            setTimeout(() => {
-                if (state.currentMode === 'items') {
-                    renderItemsTables();
-                }
-            }, 400);
-        } catch (err) {
-            console.error('Comment save error:', err);
-            alert('Yorum kaydedilemedi. Lütfen tekrar deneyin.');
-        }
+        // Re-render to update comment indicators
+        setTimeout(() => {
+            if (state.currentMode === 'items') {
+                renderItemsTables();
+            }
+        }, 400);
+    } catch (err) {
+        console.error('❌ Comment save error:', err);
+        alert('Yorum kaydedilemedi: ' + err.message);
     }
 }
 

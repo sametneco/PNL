@@ -1,31 +1,31 @@
-/* ===== CSS Variables - Dark Mode ===== */
+/* ===== CSS Variables - Light Theme ===== */
 :root {
-    --primary: #00704A;
-    --primary-light: #00a86b;
-    --primary-dark: #004e34;
+    --primary: #00a86b;
+    --primary-light: #00c97d;
+    --primary-dark: #00704A;
     --accent: #d4a574;
     --accent-light: #e8c9a8;
 
-    /* Dark Mode Backgrounds */
-    --bg-dark: #0a0d10;
-    --bg-card: #12161c;
-    --bg-card-hover: #1a1f28;
-    --bg-modal: #151a22;
+    /* Light Mode Backgrounds */
+    --bg-dark: #f5f7fa;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f2f5;
+    --bg-modal: #ffffff;
 
-    /* Dark Mode Text */
-    --text-primary: #ffffff;
-    --text-secondary: #a0aec0;
-    --text-muted: #64748b;
+    /* Light Mode Text */
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
 
-    /* Dark Mode Borders */
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-light: rgba(255, 255, 255, 0.12);
+    /* Light Mode Borders */
+    --border-color: rgba(0, 0, 0, 0.08);
+    --border-light: rgba(0, 0, 0, 0.12);
 
-    /* Dark Mode Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 30px rgba(0, 112, 74, 0.3);
+    /* Light Mode Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15);
+    --shadow-glow: 0 0 30px rgba(0, 168, 107, 0.15);
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -59,7 +59,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Background gradient - Dark Mode */
+/* Background gradient - Light Theme */
 body::before {
     content: '';
     position: fixed;
@@ -68,21 +68,27 @@ body::before {
     right: 0;
     bottom: 0;
     background:
-        radial-gradient(ellipse at 20% 20%, rgba(0, 112, 74, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(212, 165, 116, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 20%, rgba(0, 112, 74, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(212, 165, 116, 0.05) 0%, transparent 50%),
         var(--bg-dark);
     z-index: -1;
 }
 
-/* ===== Header - Dark Mode ===== */
+/* ===== Header - Light Theme ===== */
 .header {
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(10, 13, 16, 0.85);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-color);
     padding: 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0.75rem 1rem;
+    }
 }
 
 .header-content {
@@ -91,6 +97,7 @@ body::before {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
 .brand {
@@ -118,15 +125,34 @@ body::before {
     flex-wrap: wrap;
 }
 
+@media (max-width: 768px) {
+    .brand-text {
+        gap: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
 .brand-name {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--primary-light);
 }
 
+@media (max-width: 768px) {
+    .brand-name {
+        font-size: 1.125rem;
+    }
+}
+
 .brand-separator {
     color: var(--text-muted);
     font-weight: 300;
+}
+
+@media (max-width: 768px) {
+    .brand-separator {
+        display: none;
+    }
 }
 
 .brand-region {
@@ -135,10 +161,22 @@ body::before {
     color: var(--text-primary);
 }
 
+@media (max-width: 768px) {
+    .brand-region {
+        font-size: 1rem;
+    }
+}
+
 .brand-title {
     font-size: 1rem;
     font-weight: 400;
     color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .brand-title {
+        display: none;
+    }
 }
 
 .admin-btn {
@@ -154,14 +192,36 @@ body::before {
     font-weight: 500;
     cursor: pointer;
     transition: all var(--transition-normal);
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .admin-btn {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+    }
 }
 
 .admin-btn:hover {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-    color: var(--text-primary);
+    color: #ffffff;
     border-color: var(--primary);
     box-shadow: var(--shadow-glow);
     transform: translateY(-2px);
+}
+
+.admin-btn svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+}
+
+@media (max-width: 768px) {
+    .admin-btn svg {
+        width: 18px;
+        height: 18px;
+    }
 }
 
 /* ===== Main Content ===== */
@@ -184,10 +244,10 @@ body::before {
     align-items: center;
     gap: 1rem;
     padding: 1.75rem 5rem;
-    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     border: 2px solid var(--primary);
     border-radius: var(--radius-xl);
-    color: var(--text-primary);
+    color: #ffffff;
     font-size: 1.5rem;
     font-weight: 700;
     cursor: pointer;
@@ -195,27 +255,8 @@ body::before {
     position: relative;
     overflow: hidden;
     box-shadow:
-        0 0 20px rgba(0, 112, 74, 0.4),
-        0 0 40px rgba(0, 112, 74, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    animation: pulse-glow 2s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-
-    0%,
-    100% {
-        box-shadow:
-            0 0 20px rgba(0, 112, 74, 0.4),
-            0 0 40px rgba(0, 112, 74, 0.2);
-    }
-
-    50% {
-        box-shadow:
-            0 0 30px rgba(0, 112, 74, 0.6),
-            0 0 60px rgba(0, 112, 74, 0.3),
-            0 0 80px rgba(0, 112, 74, 0.1);
-    }
+        0 4px 20px rgba(0, 112, 74, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .period-selector-btn::before {
@@ -235,17 +276,13 @@ body::before {
 
 .period-selector-btn:hover {
     border-color: var(--primary-light);
-    box-shadow:
-        0 0 40px rgba(0, 112, 74, 0.6),
-        0 0 80px rgba(0, 112, 74, 0.3);
-    transform: scale(1.05);
-    animation: none;
+    box-shadow: 0 6px 30px rgba(0, 112, 74, 0.4);
+    transform: translateY(-2px);
 }
 
 .period-selector-btn.active {
     border-color: var(--primary-light);
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    animation: none;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
 }
 
 .period-icon {
@@ -541,9 +578,8 @@ body::before {
 }
 
 .store-card {
-    background: linear-gradient(145deg, rgba(18, 22, 28, 0.9) 0%, rgba(26, 31, 40, 0.95) 100%);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     padding: 1.25rem;
     text-align: left;
@@ -555,35 +591,21 @@ body::before {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-}
-
-/* Glassmorphism glow */
-/* Neon çerçeve */
-.store-card {
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-sm);
 }
 
 .store-card:hover {
     border-color: var(--primary);
-    box-shadow: 0 0 15px var(--primary), inset 0 0 10px rgba(0, 112, 74, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 112, 74, 0.15);
     transform: translateY(-4px);
 }
 
 .store-card.active {
     border-color: var(--primary);
-    box-shadow: 0 0 20px var(--primary), inset 0 0 20px rgba(0, 112, 74, 0.3);
-    background: linear-gradient(145deg, rgba(0, 112, 74, 0.2) 0%, rgba(18, 22, 28, 0.95) 100%);
+    box-shadow: 0 6px 30px rgba(0, 112, 74, 0.2);
+    background: linear-gradient(145deg, rgba(0, 112, 74, 0.05) 0%, #ffffff 100%);
     transform: scale(1.02);
 }
-
-/* Eski glow efektleri kaldırıldı */
-.store-card::before,
-.store-card::after {
-    display: none;
-}
-
-/* Active state handled above */
 
 /* Store Card Header */
 .store-card-header {
@@ -616,22 +638,18 @@ body::before {
 }
 
 /* Daha şık mağaza ismi */
-/* Daha şık mağaza ismi */
 .store-name-only {
     font-size: 1.3rem;
-    font-weight: 800;
+    font-weight: 700;
     color: var(--text-primary);
     line-height: 1.2;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    letter-spacing: 0.3px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     transition: all var(--transition-normal);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .store-card.active .store-name-only {
-    color: var(--primary-light);
-    text-shadow: 0 0 10px rgba(0, 112, 74, 0.4);
+    color: var(--primary);
 }
 
 /* Store Card Info */
@@ -1101,14 +1119,10 @@ body::before {
 }
 
 .comment-modal {
-    background: linear-gradient(145deg, rgba(18, 22, 28, 0.98) 0%, rgba(26, 31, 40, 0.98) 100%);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 112, 74, 0.3);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
-    box-shadow:
-        0 20px 60px rgba(0, 0, 0, 0.6),
-        0 0 40px rgba(0, 112, 74, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     max-width: 800px;
     width: 92%;
     max-height: 90vh;
@@ -1126,8 +1140,8 @@ body::before {
     justify-content: space-between;
     align-items: flex-start;
     padding: 2rem 2rem 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    background: linear-gradient(135deg, rgba(0, 112, 74, 0.08) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(0, 112, 74, 0.03) 0%, transparent 100%);
     position: relative;
 }
 
@@ -1139,7 +1153,7 @@ body::before {
     right: 2rem;
     height: 2px;
     background: linear-gradient(90deg, var(--primary), transparent);
-    opacity: 0.5;
+    opacity: 0.3;
 }
 
 .comment-modal-title {
@@ -1158,7 +1172,7 @@ body::before {
 .comment-modal-title .subtitle {
     font-size: 1rem;
     font-weight: 500;
-    color: var(--primary-light);
+    color: var(--primary);
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -1168,14 +1182,14 @@ body::before {
     content: '';
     width: 4px;
     height: 4px;
-    background: var(--primary-light);
+    background: var(--primary);
     border-radius: 50%;
 }
 
 .comment-modal-close {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-muted);
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
     cursor: pointer;
     padding: 0.625rem;
     border-radius: var(--radius-md);
@@ -1333,29 +1347,29 @@ body::before {
 
 .comment-textarea-container {
     position: relative;
-    background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: #f8f9fa;
+    border: 2px solid var(--border-color);
     border-radius: 28px;
     padding: 1rem 1.5rem;
     transition: all var(--transition-normal);
     overflow: visible;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Focus state - Beyaz parlak çerçeve */
+/* Focus state - Yeşil çerçeve */
 .comment-textarea-container:focus-within {
-    border-color: rgba(255, 255, 255, 0.8);
-    background: linear-gradient(135deg, #2d2d2d 0%, #222 100%);
+    border-color: var(--primary);
+    background: #ffffff;
     box-shadow:
-        0 0 0 4px rgba(255, 255, 255, 0.15),
-        0 8px 30px rgba(0, 0, 0, 0.4);
+        0 0 0 4px rgba(0, 112, 74, 0.1),
+        inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Pasif state - İkonlar kaybolunca */
 .comment-textarea-container.inactive {
-    border-color: rgba(255, 255, 255, 0.08);
-    background: linear-gradient(135deg, #2a2a2a 0%, #1f1f1f 100%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border-color: var(--border-color);
+    background: #f8f9fa;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .comment-main-textarea {
@@ -1365,7 +1379,7 @@ body::before {
     padding: 0.75rem 4rem 2.5rem 0.75rem;
     background: transparent;
     border: none;
-    color: #e0e0e0;
+    color: var(--text-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 0.938rem;
     line-height: 1.6;
@@ -1380,7 +1394,7 @@ body::before {
 }
 
 .comment-main-textarea::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--text-muted);
     font-style: normal;
     text-transform: none;
 }

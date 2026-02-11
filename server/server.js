@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
+const compression = require('compression');
 const fs = require('fs');
 const path = require('path');
 
@@ -22,9 +23,15 @@ if (process.env.RENDER_EXTERNAL_URL) {
 }
 
 // Middleware
+app.use(compression()); // Gzip compression
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+
+// Static files with cache
+app.use(express.static(path.join(__dirname, '../public'), {
+    maxAge: '1d', // 1 gün cache
+    etag: true
+}));
 
 // Directories
 const UPLOADS_DIR = path.join(__dirname, 'uploads');

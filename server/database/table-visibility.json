@@ -1,8 +1,8 @@
 {
   "1": {
     "px": {
-      "Net Sales": false,
-      "COGS": false,
+      "Net Sales": true,
+      "COGS": true,
       "Royalty": false,
       "Store Margin": false,
       "Cost of Sales": false,
@@ -38,7 +38,7 @@
       "Cost of Sales": false,
       "Operating Margin": false,
       "Staff Cost": false,
-      "Controllables": true,
+      "Controllables": false,
       "Rent": false,
       "Depreciation": false,
       "Store Contribution": false,

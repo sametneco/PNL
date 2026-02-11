@@ -38,8 +38,8 @@
 
 1. **Projeyi klonlayın**
 ```bash
-git clone https://github.com/kullaniciadi/starbucks-pnl-analiz.git
-cd starbucks-pnl-analiz
+git clone https://github.com/sametneco/PNL.git
+cd PNL
 ```
 
 2. **Bağımlılıkları yükleyin**
@@ -56,6 +56,18 @@ npm start
 ```
 http://localhost:8080
 ```
+
+### ⚡ Performans Notları
+
+**Render.com Ücretsiz Plan:**
+- İlk yükleme: 30-60 saniye (cold start)
+- Sonraki yüklemeler: 3-5 saniye (keep-alive aktif)
+- 15 dakika kullanılmazsa uyur
+
+**Daha Hızlı Alternatifler:**
+- Railway.app: Cold start yok, her zaman hızlı
+- Fly.io: Global edge network, çok hızlı
+- Vercel: Serverless, anında başlatma
 
 ---
 
