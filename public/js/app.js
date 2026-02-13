@@ -239,7 +239,7 @@ function generateStoreTableData(groupName) {
         return {
             ...store,
             ...getStoreGroupData(store.code, groupName),
-            hasComment: !!(state.comments && Object.keys(state.comments).find(k => k.startsWith(store.code))),
+            hasComment: !!(state.comments && state.comments[`${String(store.code).trim()}_${groupName}`]),
             isVisible: isVisible
         };
     });
@@ -255,6 +255,7 @@ let state = {
     tableSorts: {}, // { tableName: { column: string, direction: 'asc' | 'desc' } }
     expandedTable: null, // Currently expanded accordion table
     comments: {}, // { 'storeCode_tableName': 'comment text' }
+    allComments: {}, // All periods comments
     storeSettings: {}, // Current SELECTED store settings
     allSettings: {}, // Cache of ALL store settings { storeCode: settingsObj }
     showAllItems: false // Toggle to show hidden items
@@ -722,9 +723,9 @@ function renderItemsTables() {
                 // "Hepsi": Show ALL 15 stores (no filtering)
                 filteredData = tableData;
             } else if (filter === 'comment') {
-                // "Yorum": Only stores with comments AND visible
+                // "Yorum": Show stores with comments REGARDLESS of visibility settings
                 filteredData = tableData.filter(storeData => {
-                    return storeData.hasComment && storeData.isVisible;
+                    return storeData.hasComment;
                 });
             }
 
@@ -1236,8 +1237,9 @@ async function saveComment() {
         }
 
         // Re-render to update comment indicators (arkaplanda)
-        setTimeout(() => {
+        setTimeout(async () => {
             if (state.currentMode === 'items') {
+                await loadComments(); // Refresh current period comments
                 renderItemsTables();
             }
         }, 400);
@@ -1335,6 +1337,7 @@ async function confirmDelete() {
 
         // Re-render to update comment indicators
         if (state.currentMode === 'items') {
+            await loadComments(); // Refresh current period comments
             renderItemsTables();
         }
     } catch (err) {
@@ -1413,6 +1416,23 @@ async function loadComments() {
     }
 }
 
+// Load ALL comments for filtering across periods
+async function loadAllComments() {
+    try {
+        const res = await fetch(`${API_URL}/comments`); // No params = get all
+        if (res.ok) {
+            const comments = await res.json();
+            state.allComments = comments || {};
+        } else {
+            console.warn('Failed to load all comments');
+            state.allComments = {};
+        }
+    } catch (error) {
+        console.error('All comments load error:', error);
+        state.allComments = {};
+    }
+}
+
 // ===== Event Listeners =====
 elements.periodSelectorBtn.addEventListener('click', openPeriodModal);
 elements.closePeriodModal.addEventListener('click', closePeriodModal);
@@ -1473,6 +1493,7 @@ document.addEventListener('keydown', (e) => {
 document.addEventListener('DOMContentLoaded', () => {
     loadStores(); // Load stores from API
     loadComments();
+    loadAllComments();
     renderPeriodList();
     loadSystemStatus();
 });

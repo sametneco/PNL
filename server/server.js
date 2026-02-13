@@ -452,6 +452,7 @@ app.get('/api/admin/check-db', async (req, res) => {
 // Get all comments (filtered by period and type)
 app.get('/api/comments', async (req, res) => {
     try {
+        console.log('GET /api/comments endpoint hit'); // DEBUG
         const { periodId, type } = req.query; // Frontend should send these
         const comments = await CommentModel.getAll(periodId, type);
         res.json(comments);

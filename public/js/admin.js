@@ -343,8 +343,29 @@ document.getElementById('clearPeriodBtn')?.addEventListener('click', async () =>
         const res = await fetch(`${API_URL}/clear/${periodId}`, { method: 'POST' });
         if (res.ok) {
             alert('Periyot verileri ve dosyaları silindi.');
-            checkPeriodStatus();
-            setTimeout(() => location.reload(), 500);
+
+            // UI Reset işlemleri (Reload yerine)
+            await checkPeriodStatus();
+
+            // Dropzone ve inputları sıfırla
+            ['px', 'ytd'].forEach(type => {
+                const dropZone = document.getElementById(`${type}DropZone`);
+                if (dropZone) {
+                    const p = dropZone.querySelector('p');
+                    if (p) p.textContent = type === 'ytd' ? 'CSV dosyasını sürükleyin' : 'veya seçmek için tıklayın';
+                    const icon = dropZone.querySelector('.upload-icon');
+                    if (icon) icon.style.color = '';
+                }
+                const fileInput = document.getElementById(`${type}File`);
+                if (fileInput) fileInput.value = '';
+                const btn = document.getElementById(type === 'px' ? 'uploadPxBtn' : 'uploadYtdBtn');
+                if (btn) btn.disabled = true;
+                filesToUpload[type] = null;
+            });
+
+            // Settings tarafını da güncelle
+            await loadStoresForSettings();
+
         } else {
             alert('Silme işlemi başarısız.');
         }
@@ -360,9 +381,28 @@ let ALL_PERIODS = [];
 let CURRENT_SETTINGS = {}; // { storeCode: { periodId: { type: { hiddenGroups: [] } } } }
 let TABLE_VISIBILITY = {}; // { periodId: { type: { tableName: boolean } } }
 let PERIOD_DATA_CACHE = {}; // Cache for period data
+let ALL_COMMENTS = {}; // Cache for comments (Hash Map)
+
+// Helper function to load comments
+async function loadComments(periodId, type) {
+    try {
+        const res = await fetch(`${API_URL}/comments?periodId=${periodId}&type=${type}`);
+        if (res.ok) {
+            ALL_COMMENTS = await res.json(); // Returns object: { "store_table": { text... } }
+        } else {
+            ALL_COMMENTS = {};
+        }
+    } catch (e) {
+        console.error('Comments load error', e);
+        ALL_COMMENTS = {};
+    }
+}
 
 // Helper function to load period data
 async function loadPeriodDataForSettings(periodId, type) {
+    // Always refresh comments
+    await loadComments(periodId, type);
+
     const cacheKey = `${periodId}_${type}`;
     if (PERIOD_DATA_CACHE[cacheKey]) {
         return PERIOD_DATA_CACHE[cacheKey];
@@ -801,6 +841,8 @@ async function renderStoreCards() {
 
     // Load period data for this period - AWAIT here
     await loadPeriodDataForSettings(periodId, type);
+    console.log('DEBUG: Data loaded via loadPeriodDataForSettings');
+    console.log('DEBUG: ALL_COMMENTS keys:', Object.keys(ALL_COMMENTS));
     console.log('Data loaded for:', periodId, type, 'Cache:', PERIOD_DATA_CACHE[`${periodId}_${type}`]?.length || 0, 'rows');
 
     // Render store cards - GROUPED BY ITEM GROUPS
@@ -849,7 +891,19 @@ async function renderStoreCards() {
                                     <polyline points="20 6 9 17 4 12"></polyline>
                                 </svg>
                             </div>
-                            <div class="group-card-title">${group.name}</div>
+                            <div class="group-card-title" style="flex: 1;">${group.name}</div>
+                ${(() => {
+                    const k1 = `${store.code}_${group.name}`;
+                    const k2 = `${store.code}_${group.name.replace(/\s+/g, '_')}`;
+                    const comment = ALL_COMMENTS[k1] || ALL_COMMENTS[k2];
+                    if (comment) console.log('DEBUG: Comment found for', k1, k2, comment);
+                    else console.log('DEBUG: No comment for', k1, k2);
+
+                    if (comment) {
+                        return `<div title="${comment.text}" style="margin-right: 8px; font-size: 18px; cursor: help; color: #00704A; font-weight: bold;">💬</div>`;
+                    }
+                    return '';
+                })()}
                             <svg class="group-card-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="event.stopPropagation(); toggleGroupExpand('${store.code}', '${group.name}')">
                                 <polyline points="6 9 12 15 18 9"/>
                             </svg>
@@ -1058,12 +1112,13 @@ window.selectAllGroups = async function (storeCode, selectAll) {
     const storeSettings = CURRENT_SETTINGS[storeCode] || {};
     const periodSettings = storeSettings[periodId] || {};
     const typeSettings = periodSettings[type] || {};
-    const highlights = typeSettings.highlights || [];
+    let highlights = typeSettings.highlights || [];
 
     let hiddenGroups = [];
     if (!selectAll) {
         // Deselect all - add all groups to hidden
         hiddenGroups = ITEM_GROUPS.map(g => g.name);
+        highlights = [];
     }
     // If selectAll, hiddenGroups stays empty
 
@@ -1179,7 +1234,7 @@ document.getElementById('btnDeselectAllStores')?.addEventListener('click', async
         const storeSettings = CURRENT_SETTINGS[store.code] || {};
         const periodSettings = storeSettings[periodId] || {};
         const typeSettings = periodSettings[type] || {};
-        const highlights = typeSettings.highlights || [];
+        // const highlights = typeSettings.highlights || []; // Eskisi buydu
 
         return fetch(`${API_URL}/settings/${store.code}/update`, {
             method: 'POST',
@@ -1187,7 +1242,7 @@ document.getElementById('btnDeselectAllStores')?.addEventListener('click', async
             body: JSON.stringify({
                 periodId: String(periodId),
                 type,
-                data: { hiddenGroups: allHidden, highlights } // All groups hidden = none selected
+                data: { hiddenGroups: allHidden, highlights: [] } // Highlights TEMİZLENDİ
             })
         });
     });
