@@ -1,71 +1,72 @@
-const FileSkill = require('../skills/FileSkill');
-const path = require('path');
-
-const COMMENTS_FILE = path.join(__dirname, '../server/database/comments.json');
+const supabase = require('../server/supabase');
 
 class CommentModel {
-    /**
-     * Get all comments
-     * @returns {Object} Comments object { 'storeCode_tableName': 'comment text' }
-     */
-    static getAll() {
-        return FileSkill.readJSON(COMMENTS_FILE, {});
-    }
 
-    /**
-     * Get comment by key
-     * @param {string} key - Comment key (storeCode_tableName)
-     * @returns {string|null} Comment text or null
-     */
-    static get(key) {
-        const comments = this.getAll();
-        return comments[key] || null;
-    }
+    // Get all comments (formatted as key-value for frontend compat)
+    // Frontend key format: "storeCode_tableName" (old) -> we might need to adjust this
+    // New frontend requirement: Comments are specific to Period + Type
+    static async getAll(periodId, type) {
+        let query = supabase.from('comments').select('*');
 
-    /**
-     * Save comment
-     * @param {string} key - Comment key (storeCode_tableName)
-     * @param {string} text - Comment text
-     */
-    static save(key, text) {
-        const comments = this.getAll();
-        comments[key] = text; // Obje veya string olarak kaydet
-        FileSkill.writeJSON(COMMENTS_FILE, comments);
-    }
+        if (periodId) query = query.eq('period_id', periodId);
+        if (type) query = query.eq('type', type);
 
-    /**
-     * Delete comment
-     * @param {string} key - Comment key (storeCode_tableName)
-     */
-    static delete(key) {
-        const comments = this.getAll();
-        delete comments[key];
-        FileSkill.writeJSON(COMMENTS_FILE, comments);
-    }
-
-    /**
-     * Get comments for specific store
-     * @param {string} storeCode - Store code
-     * @returns {Object} Comments for this store
-     */
-    static getByStore(storeCode) {
-        const comments = this.getAll();
-        const storeComments = {};
-
-        for (const key in comments) {
-            if (key.startsWith(storeCode + '_')) {
-                storeComments[key] = comments[key];
-            }
+        const { data, error } = await query;
+        if (error) {
+            console.error('Supabase get comments error:', error);
+            return {};
         }
 
-        return storeComments;
+        // Convert array to object hash: "storeCode_tableName": { text, author, timestamp }
+        const result = {};
+        data.forEach(item => {
+            const key = `${item.store_code}_${item.table_name}`;
+            result[key] = {
+                text: item.text,
+                author: item.author,
+                timestamp: item.created_at
+            };
+        });
+        return result;
     }
 
-    /**
-     * Clear all comments
-     */
-    static clearAll() {
-        FileSkill.writeJSON(COMMENTS_FILE, {});
+    // Save comment
+    static async save(storeCode, tableName, periodId, type, text, author) {
+        const { data, error } = await supabase
+            .from('comments')
+            .upsert({
+                store_code: storeCode,
+                table_name: tableName,
+                period_id: periodId,
+                type: type,
+                text: text,
+                author: author,
+                created_at: new Date().toISOString()
+            }, {
+                onConflict: 'store_code, table_name, period_id, type'
+            });
+
+        if (error) {
+            console.error('Supabase save comment error:', error);
+            throw error;
+        }
+        return data;
+    }
+
+    // Delete comment
+    static async delete(storeCode, tableName, periodId, type) {
+        const { error } = await supabase
+            .from('comments')
+            .delete()
+            .match({
+                store_code: storeCode,
+                table_name: tableName,
+                period_id: periodId,
+                type: type
+            });
+
+        if (error) throw error;
+        return true;
     }
 }
 

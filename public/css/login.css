@@ -396,3 +396,27 @@ body {
         font-size: 1.5rem;
     }
 }
+
+/* Anasayfaya Dön Butonu */
+.back-to-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #00704A;
+    text-decoration: none;
+    border: 1px solid rgba(0, 112, 74, 0.2);
+    border-radius: 10px;
+    background: rgba(0, 112, 74, 0.04);
+    transition: all 0.2s ease;
+    animation: fadeInUp 0.6s ease-out 0.35s both;
+}
+
+.back-to-home:hover {
+    background: rgba(0, 112, 74, 0.1);
+    border-color: rgba(0, 112, 74, 0.4);
+    transform: translateX(-3px);
+}

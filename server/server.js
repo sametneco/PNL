@@ -324,12 +324,136 @@ app.get('/api/status', (req, res) => {
     }
 });
 
+// MIGRATION: Seed Stores from JSON to Supabase
+app.get('/api/admin/seed-stores', async (req, res) => {
+    try {
+        let storesPath = path.join(__dirname, 'database/stores.json');
+        if (!fs.existsSync(storesPath)) {
+            const dataStoresPath = path.join(__dirname, 'data/stores.json');
+            if (fs.existsSync(dataStoresPath)) {
+                storesPath = dataStoresPath;
+            } else {
+                return res.status(404).json({ error: 'Stores JSON not found in database/ or data/' });
+            }
+        }
+
+        const str = fs.readFileSync(storesPath, 'utf8');
+        const stores = JSON.parse(str);
+
+        const supabase = require('./supabase');
+
+        const rows = stores.map(s => {
+            // Convert Excel date to ISO date
+            let openDate = null;
+            if (s.openingDate) {
+                const excelEpoch = new Date(1899, 11, 30);
+                const days = parseInt(s.openingDate);
+                if (!isNaN(days)) {
+                    const jsDate = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
+                    openDate = jsDate.toISOString().split('T')[0];
+                }
+            }
+
+            return {
+                code: s.code,
+                name: s.name,
+                opening_date: openDate,
+                area: s.area ? parseFloat(s.area) : null,
+                visible: s.visible
+            };
+        });
+
+        const { error } = await supabase.from('stores').upsert(rows);
+
+        if (error) throw error;
+
+        res.json({ success: true, count: rows.length, message: 'Stores migrated to Supabase successfully' });
+
+    } catch (err) {
+        console.error('Migration error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// DIAGNOSTIC: Check Database State (Stores, Periods, and Write Permissions)
+app.get('/api/admin/check-db', async (req, res) => {
+    const supabase = require('./supabase');
+    const report = {
+        online: true,
+        checks: []
+    };
+
+    try {
+        // 1. Check Periods
+        const { data: periods, error: periodError } = await supabase.from('periods').select('count', { count: 'exact', head: true });
+        report.checks.push({
+            name: 'Periods Table',
+            status: periodError ? 'ERROR' : 'OK',
+            details: periodError || { count: periods }
+        });
+
+        // 2. Check Stores
+        const { data: stores, error: storeError } = await supabase.from('stores').select('count', { count: 'exact', head: true });
+        report.checks.push({
+            name: 'Stores Table',
+            status: storeError ? 'ERROR' : 'OK',
+            details: storeError || { count: stores }
+        });
+
+        // 3. Check Specific Store (U744)
+        const { data: u744, error: u744Error } = await supabase.from('stores').select('*').eq('code', 'U744').single();
+        report.checks.push({
+            name: 'Store U744',
+            status: u744Error ? 'MISSING/ERROR' : 'FOUND',
+            details: u744Error || u744
+        });
+
+        // 4. Test Write Permission (Dummy Comment)
+        const testComment = {
+            key: 'TEST_DIAGNOSTIC',
+            store_code: 'U744', // Must exist if checking FK
+            table_name: 'Diagnostic',
+            text: 'Test',
+            period_id: 1, // Must exist
+            type: 'px'
+        };
+
+        // Only try write if dependencies might exist
+        if (!storeError && !periodError) {
+            const { error: writeError } = await supabase.from('comments').upsert(testComment);
+            if (writeError) {
+                report.checks.push({
+                    name: 'Write Permission (Comments)',
+                    status: 'FAILED',
+                    code: writeError.code,
+                    message: writeError.message,
+                    details: writeError
+                });
+            } else {
+                report.checks.push({
+                    name: 'Write Permission (Comments)',
+                    status: 'SUCCESS',
+                    message: 'Write successful (RLS is OK)'
+                });
+                // Cleanup
+                await supabase.from('comments').delete().eq('key', 'TEST_DIAGNOSTIC');
+            }
+        }
+
+        res.json(report);
+
+    } catch (err) {
+        res.status(500).json({ error: err.message, stack: err.stack });
+    }
+});
+
 // ===== COMMENT API ENDPOINTS =====
 
-// Get all comments
-app.get('/api/comments', (req, res) => {
+// Get all comments (filtered by period and type)
+app.get('/api/comments', async (req, res) => {
     try {
-        const comments = CommentModel.getAll();
+        const { periodId, type } = req.query; // Frontend should send these
+        const comments = await CommentModel.getAll(periodId, type);
         res.json(comments);
     } catch (err) {
         console.error('Comments fetch error:', err);
@@ -337,30 +461,31 @@ app.get('/api/comments', (req, res) => {
     }
 });
 
-// Get comment by key
-app.get('/api/comments/:key', (req, res) => {
-    try {
-        const comment = CommentModel.get(req.params.key);
-        res.json({ comment });
-    } catch (err) {
-        console.error('Comment fetch error:', err);
-        res.status(500).json({ error: 'Yorum yüklenemedi.' });
-    }
-});
-
 // Save comment
-app.post('/api/comments', (req, res) => {
+app.post('/api/comments', async (req, res) => {
     try {
-        const { key, text, author, timestamp } = req.body;
+        console.log('Received comment payload:', req.body); // DEBUG
+        // key format from frontend: "storeCode_tableName"
+        // frontend must also send periodId and type now
+        const { key, text, author, periodId, type } = req.body;
 
-        if (!key || !text) {
-            return res.status(400).json({ error: 'Key ve text gerekli.' });
+        if (!key || !text || !periodId || !type) {
+            console.error('Missing fields:', { key, text, periodId, type }); // DEBUG
+            return res.status(400).json({ error: 'Eksik bilgi: key, text, periodId, type zorunlu.' });
         }
 
-        // Eğer author varsa obje olarak kaydet, yoksa string (eski usul)
-        const valueToSave = author ? { text, author, timestamp } : text;
+        // Parse key to get storeCode and tableName
+        // Key format assumption: "STORECODE_TABLENAME"
+        // But table name can contain underscores? 
+        // Let's assume the first part is storeCode (it usually has no underscores or we split by first underscore)
+        // Better yet, update frontend to send storeCode and tableName separately.
+        // For now, let's try to parse existing key: "1234_FAVÖK"
 
-        CommentModel.save(key, valueToSave);
+        const parts = key.split('_');
+        const storeCode = parts[0];
+        const tableName = parts.slice(1).join('_'); // Rest is table name
+
+        await CommentModel.save(storeCode, tableName, periodId, type, text, author);
         res.json({ success: true, message: 'Yorum kaydedildi.' });
     } catch (err) {
         console.error('Comment save error:', err);
@@ -369,9 +494,20 @@ app.post('/api/comments', (req, res) => {
 });
 
 // Delete comment
-app.delete('/api/comments/:key', (req, res) => {
+app.delete('/api/comments/:key', async (req, res) => {
     try {
-        CommentModel.delete(req.params.key);
+        const { key } = req.params;
+        const { periodId, type } = req.query;
+
+        if (!periodId || !type) {
+            return res.status(400).json({ error: 'PeriodId ve Type gerekli.' });
+        }
+
+        const parts = key.split('_');
+        const storeCode = parts[0];
+        const tableName = parts.slice(1).join('_');
+
+        await CommentModel.delete(storeCode, tableName, periodId, type);
         res.json({ success: true, message: 'Yorum silindi.' });
     } catch (err) {
         console.error('Comment delete error:', err);
@@ -379,17 +515,7 @@ app.delete('/api/comments/:key', (req, res) => {
     }
 });
 
-// Get comments by store
-app.get('/api/comments/store/:storeCode', (req, res) => {
-    try {
-        const comments = CommentModel.getByStore(req.params.storeCode);
-        res.json(comments);
-    } catch (err) {
-        console.error('Store comments fetch error:', err);
-        res.status(500).json({ error: 'Mağaza yorumları yüklenemedi.' });
-    }
-});
-
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
+

@@ -18,7 +18,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (err) {
         console.error('Auth check failed:', err);
+        localStorage.removeItem('pnl_auth_token');
+        window.location.href = '/login.html?return=admin.html';
+        return;
     }
+
+    // Auth başarılı - sayfayı göster
+    document.body.classList.remove('auth-pending');
 
     // UI Init
     initTabs();

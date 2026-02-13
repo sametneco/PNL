@@ -9,9 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Styles -->
     <link rel="stylesheet" href="css/admin.css">
+    <style>
+        /* Auth kontrolü tamamlanana kadar sayfayı tamamen gizle */
+        body.auth-pending {
+            display: none !important;
+        }
+    </style>
 </head>
 
-<body>
+<body class="auth-pending">
 
     <div class="app-layout">
         <!-- SIDEBAR -->
@@ -241,13 +247,15 @@
                             <h3 class="card-title">Bu Periyotta Gösterilecek Tablolar</h3>
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn btn-secondary btn-sm" id="btnSelectAllTables">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                     Tümünü Seç
                                 </button>
                                 <button class="btn btn-secondary btn-sm" id="btnDeselectAllTables">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
                                     </svg>
@@ -266,13 +274,15 @@
                             <h3 class="card-title">Mağaza Kalem Ayarları</h3>
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn-modern btn-modern-secondary" id="btnSelectAllStores">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <polyline points="20 6 9 17 4 12"></polyline>
                                     </svg>
                                     Tüm Mağazaları Seç
                                 </button>
                                 <button class="btn-modern btn-modern-secondary" id="btnDeselectAllStores">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
                                     </svg>
@@ -288,12 +298,15 @@
 
                 <!-- Boş Durum Mesajı -->
                 <div id="emptyStateSettings" class="card" style="text-align: center; padding: 3rem;">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 1rem; color: #9CA3AF;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        style="margin: 0 auto 1rem; color: #9CA3AF;">
                         <path d="M9 11l3 3L22 4"></path>
                         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                     </svg>
-                    <h3 style="color: var(--text-secondary); font-weight: 500; margin: 0;">Periyot ve veri tipi seçin</h3>
-                    <p style="color: var(--text-muted); margin: 0.5rem 0 0 0; font-size: 0.9rem;">Mağaza kartları burada görünecek</p>
+                    <h3 style="color: var(--text-secondary); font-weight: 500; margin: 0;">Periyot ve veri tipi seçin
+                    </h3>
+                    <p style="color: var(--text-muted); margin: 0.5rem 0 0 0; font-size: 0.9rem;">Mağaza kartları burada
+                        görünecek</p>
                 </div>
             </section>
 

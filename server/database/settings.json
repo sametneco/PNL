@@ -12,20 +12,7 @@
     },
     "2": {
       "px": {
-        "hiddenGroups": [
-          "Net Sales",
-          "COGS",
-          "Royalty",
-          "Store Margin",
-          "Cost of Sales",
-          "Operating Margin",
-          "Staff Cost",
-          "Controllables",
-          "Rent",
-          "Depreciation",
-          "Store Contribution",
-          "Cash +/- Stores"
-        ],
+        "hiddenGroups": [],
         "highlights": []
       },
       "ytd": {

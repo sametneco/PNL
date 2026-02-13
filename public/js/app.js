@@ -368,6 +368,9 @@ async function selectPeriod(periodId) {
     // Fetch data for this period
     await fetchPeriodData(periodId);
 
+    // Load comments for this period
+    await loadComments();
+
     // Update UI
     elements.periodText.textContent = state.selectedPeriod.name;
     elements.periodSelectorBtn.classList.add('active');
@@ -407,10 +410,14 @@ function switchMode(mode) {
     renderContent();
 }
 
-function switchDataSource(source) {
+async function switchDataSource(source) {
     state.dataSource = source;
     elements.pxTab.classList.toggle('active', source === 'px');
     elements.ytdTab.classList.toggle('active', source === 'ytd');
+
+    // Reload comments for new source specific to period
+    await loadComments();
+
     deselectStore();
     renderContent();
 }
@@ -1042,10 +1049,9 @@ async function openCommentModal(storeCode, tableName) {
             deleteBtn.classList.remove('hidden');
             deleteBtn.style.display = 'inline-flex';
 
-            // Eğer yorum kaydedilmişse ve modal açıldıysa, salt okunur modda göster
-            if (commentData) {
-                showSavedCommentCard(commentData);
-            }
+            // Eğer yorum kaydedilmişse ve modal açıldıysa, yine de textarea göster (düzenlenebilir)
+            // showSavedCommentCard(commentData); <--- BU SATIR KALDIRILDI
+            showTextareaMode();
         } else {
             deleteBtn.classList.add('hidden');
             deleteBtn.style.display = 'none';
@@ -1164,22 +1170,23 @@ async function saveComment() {
             return;
         }
 
-        // Local Storage'dan kullanıcı adını al
-        let username = localStorage.getItem('pnl_comment_author');
-        if (!username) {
-            username = prompt('Yorum eklemek için isminizi giriniz:');
-            if (username) {
-                localStorage.setItem('pnl_comment_author', username);
-            } else {
-                return; // İsim girilmezse kaydetme
-            }
+        if (!state.selectedPeriod) {
+            alert('Hata: Periyot seçili değil.');
+            return;
         }
+
+        // Local Storage'dan kullanıcı adını al - ARTIK ZORUNLU DEĞİL
+        let username = localStorage.getItem('pnl_comment_author') || 'Misafir';
+
+        // Prompt kaldırıldı - Kullanıcı adı istemiyoruz.
 
         const commentObj = {
             key: currentCommentKey,
             text: commentText,
             author: username,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            periodId: state.selectedPeriod.id, // YENİ: Periyot ID
+            type: state.dataSource // YENİ: Veri Tipi (px/ytd)
         };
 
         // Save to backend
@@ -1199,17 +1206,27 @@ async function saveComment() {
         // Update local state - store full object
         state.comments[currentCommentKey] = commentObj;
 
-        // Show saved card immediately
-        showSavedCommentCard(commentObj);
+        // EKRAN DEĞİŞİKLİĞİNİ ENGELLE - Saved Card yerine Textarea kalsın
+        // showSavedCommentCard(commentObj); <--- BU SATIRI KALDIRDIK
 
         // Animate save icon
         const saveBtn = document.getElementById('inlineSaveBtn');
         const deleteBtn = document.getElementById('inlineDeleteBtn');
-        const container = document.getElementById('commentTextareaContainer');
 
         if (saveBtn) {
             saveBtn.classList.add('saving');
-            setTimeout(() => saveBtn.classList.remove('saving'), 600);
+            // İkonu geçici olarak onay işaretine çevir
+            const originalHTML = saveBtn.innerHTML;
+            saveBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="width: 18px; height: 18px; display: block;">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+            `;
+
+            setTimeout(() => {
+                saveBtn.classList.remove('saving');
+                saveBtn.innerHTML = originalHTML;
+            }, 1500);
         }
 
         // Show delete button
@@ -1218,20 +1235,13 @@ async function saveComment() {
             deleteBtn.style.display = 'inline-flex';
         }
 
-        // İkonları gizle ve çerçeveyi pasifleştir
-        setTimeout(() => {
-            if (container) {
-                container.classList.remove('has-content');
-                container.classList.add('inactive');
-            }
-        }, 700);
-
-        // Re-render to update comment indicators
+        // Re-render to update comment indicators (arkaplanda)
         setTimeout(() => {
             if (state.currentMode === 'items') {
                 renderItemsTables();
             }
         }, 400);
+
     } catch (err) {
         console.error('❌ Comment save error:', err);
         alert('Yorum kaydedilemedi: ' + err.message);
@@ -1286,8 +1296,16 @@ async function confirmDelete() {
     if (!currentCommentKey) return;
 
     try {
+        if (!state.selectedPeriod) return;
+
         // Delete from backend
-        const res = await fetch(`${API_URL}/comments/${currentCommentKey}`, {
+        // Query params ile periodId ve type gönderiyoruz
+        const params = new URLSearchParams({
+            periodId: state.selectedPeriod.id,
+            type: state.dataSource
+        });
+
+        const res = await fetch(`${API_URL}/comments/${currentCommentKey}?${params.toString()}`, {
             method: 'DELETE'
         });
 
@@ -1368,14 +1386,28 @@ function closeCommentModal() {
 
 // Load comments from backend
 async function loadComments() {
+    if (!state.selectedPeriod) return;
+
     try {
-        const res = await fetch(`${API_URL}/comments`);
+        // Query params ile periodId ve type gönderiyoruz
+        const params = new URLSearchParams({
+            periodId: state.selectedPeriod.id,
+            type: state.dataSource
+        });
+
+        const res = await fetch(`${API_URL}/comments?${params.toString()}`);
         if (res.ok) {
             const comments = await res.json();
             state.comments = comments || {};
         } else {
             state.comments = {};
         }
+
+        // Render update if needed
+        if (state.currentMode === 'items') {
+            renderItemsTables();
+        }
+
     } catch (error) {
         state.comments = {};
     }
