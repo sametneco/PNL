@@ -8,17 +8,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     try {
+        // 15 saniye timeout ekle (Render uyku modu için uzun tutuldu)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         const authRes = await fetch(`${window.location.origin}/api/auth/verify`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${token}` },
+            signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
+
         if (!authRes.ok) {
-            localStorage.removeItem('pnl_auth_token');
-            window.location.href = '/login.html?return=admin.html';
-            return;
+            throw new Error('Auth failed');
         }
     } catch (err) {
-        console.error('Auth check failed:', err);
+        console.error('Auth check error:', err);
         localStorage.removeItem('pnl_auth_token');
+
+        if (err.name === 'AbortError') {
+            // Timeout durumunda kullanıcıyı bilgilendir
+            alert("Sunucu yanıt vermedi (Uyku modundan çıkıyor olabilir). Lütfen 10 saniye sonra sayfayı yenileyin.");
+        }
+
         window.location.href = '/login.html?return=admin.html';
         return;
     }
